@@ -59,3 +59,19 @@ alias u="sudo softwareupdate --install --all \
             && brew update \
             && brew upgrade \
             && brew cleanup"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Customizations
+
+alias iso="TZ=America/Los_Angeles date -Iseconds"
+
+# Get local network info.
+alias local-ip="ipconfig getifaddr en1"
+alias ports="lsof -P -iTCP -sTCP:LISTEN"
+
+# Hide/Show hidden files in Finder.
+alias hide-hidden-files="defaults write com.apple.finder AppleShowAllFiles -bool false \
+                            && killall Finder"
+alias show-hidden-files="defaults write com.apple.finder AppleShowAllFiles -bool true \
+                            && killall Finder"

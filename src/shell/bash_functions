@@ -226,3 +226,357 @@ s() {
           #    │         └─ Display ANSI color escape sequences in raw form.
           #    └─ Don't clear the screen after quitting less.
 }
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Cutomizations
+
+# Delete files that match a certain pattern from the current directory.
+clean-dev() {
+    sudo find . -name "node_modules" -exec rm -rf '{}' +
+    find . -name "bower_components" -exec rm -rf '{}' +
+}
+
+# Kill off Node Inspector
+killni() {
+    killni_target='node --debug-brk'
+    ps -ef | grep "$killni_target" | grep -v grep | awk '{print $2}' | xargs kill -9
+}
+
+# Push the Node project while using the version for the commit message.
+vpush() {
+
+    # Ensure JQ is installed
+    if ! cmd_exists "jq"; then
+        printf "jq is required, please install it!\n"
+        exit 1
+    fi
+
+    pkg_ver=$(jq '.version' package.json)
+    pkg_ver=${pkg_ver//\"/}
+    git add -A
+    git commit -a -S -m $pkg_ver
+    git push origin master
+
+}
+
+set-git-public(){
+    git config user.email "fred.lackey@gmail.com"
+    git config user.name "Fred Lackey"
+}
+
+backup-source(){
+    backupdir="$*$(date +"%Y%m%d%H%M%S")/"
+    backupcmd="rsync -arv --progress --no-links --exclude={.Trash,.android,.atom,.bash_sessions,.cache,.cups,.dropbox,.git,.next,.npm,.nvm,.viminfo,bower_components,node_modules,.tmp,.idea,.DS_Store} ~/Source $backupdir"
+    mkdir -p "$backupdir"
+    eval "$backupcmd"
+    cd "$backupdir"
+}
+
+backup-all(){
+
+    excludes=".android,.atom,.bash_sessions,bower_components,.cache,.cups,.dropbox,.DS_Store,.git,_gsdata_,.idea,node_modules,.next,.npm,.nvm,\$RECYCLE.BIN,System\ Volume\ Information,.TemporaryItems,.Trash,.Trashes,.tmp,.viminfo"
+
+    backupdir="$*"
+    backupcmd="rsync -arv --progress --no-links --exclude={$excludes} ~/Downloads $backupdir"
+    eval "$backupcmd"
+
+    backupdir="$*$(date +"%Y%m%d%H%M%S")/"
+    backupcmd="rsync -arv --progress --no-links --exclude={$excludes} ~/Backups ~/Desktop ~/Documents ~/Microsoft ~/Movies ~/Music ~/Pictures ~/Public ~/Source ~/Templates ~/Temporary ~/Videos $backupdir"
+    mkdir -p "$backupdir"
+    eval "$backupcmd"
+
+    cd "$backupdir"
+    ls -la
+}
+
+org-by-date(){
+    ls -A1 | grep -E '[0-9]{4}-[0-9]{2}-[0-9]{2}' | while read -r line; do
+        DNAME="$(echo $line | grep -Eo '[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}' | sed 's#-#/#g')"
+        mkdir -p "./$DNAME"
+        mv "$line" "./$DNAME/"
+    done
+}
+
+get-course(){
+    local usage="get-course %COURSE_NAME_FROM_URL% %USERNAME% %PASSWORD%";
+    local course="$1";
+    local username="$2";
+    local password="$3";
+    local prefix="";
+    if [ -e "/usr/local/bin/youtube-dl" ]; then
+        prefix="/usr/local/bin/";
+    fi
+    if [ -z "$course" ]; then
+      echo "Problem getting Pluralisight course: Course name not supplied"
+      echo "$usage"
+    elif [ -z "$username" ]; then
+      echo "Problem getting Pluralisight course: Username not supplied"
+      echo "$usage"
+    elif [ -z "$password" ]; then
+      echo "Problem getting Pluralisight course: Password not supplied"
+      echo "$usage"
+    else
+      eval "${prefix}youtube-dl --verbose --username $username --password $password --rate-limit 50K --sleep-interval 600 -o \"%(autonumber)s - %(title)s.%(ext)s\" \"https://app.pluralsight.com/library/courses/${course}\""
+    fi
+}
+
+get-channel(){
+    local usage="get-channel %COURSE_NAME_FROM_URL%";
+    local channel="$1";
+    local prefix="";
+    if [ -e "/usr/local/bin/youtube-dl" ]; then
+        prefix="/usr/local/bin/";
+    fi
+    if [ -z "$channel" ]; then
+      echo "Problem getting Youtube channel: Channel name not supplied"
+      echo "$usage"
+    else
+      eval "${prefix}youtube-dl -f best -ciw -v -o \"%(upload_date)s - %(title)s.%(ext)s\" https://www.youtube.com/user/$channel"
+    fi
+}
+
+get-tunes(){
+    local usage="get-tunes %PLAYLIST_OR_VIDEO_URL% [audio-only | video-only]";
+    local url="$1";
+    local option="$2";
+    local prefix="";
+    if [ -f "/usr/local/bin/youtube-dl" ]; then
+        prefix="/usr/local/bin/";
+    fi
+    if [ -z "${url}" ]; then
+        echo "Problem fetching track: Track URL not supplied";
+        echo "$usage";
+    elif [ -z "${option}" ]; then
+        echo "Fetching audio & video...";
+        eval "${prefix}youtube-dl --buffer-size 16K --keep-video --audio-format mp3 --extract-audio --embed-thumbnail --prefer-insecure --format mp4 --ignore-errors --output '%(title)s.%(ext)s' $1";
+    elif [[ "$option" == "audio-only" ]]; then
+        echo "Excluding video...";
+        eval "${prefix}youtube-dl --buffer-size 16K --audio-format mp3 --extract-audio --embed-thumbnail --prefer-insecure --ignore-errors --output '%(title)s.%(ext)s' $1";
+    elif [[ "$option" == "video-only" ]]; then
+        echo "Excluding audio...";
+        eval "${prefix}youtube-dl --buffer-size 16K --keep-video --prefer-insecure --format mp4 --ignore-errors --output '%(title)s.%(ext)s' $1";
+    else
+        echo "Problem fetching track: Unknown option supplied ($option)";
+        echo "$usage";
+    fi
+}
+
+docker-clean(){
+    # Delete all containers
+    docker rm -f $(docker ps -a -q)
+    # Delete all images
+    docker images -q | xargs docker rmi -f
+    # Delete volumes
+    docker volume rm $(docker volume ls -q)
+}
+
+git-clone(){
+    eval "rsync -av --progress $* ./ --exclude .git --exclude README.md --exclude LICENSE --exclude node_modules --exclude bower_components"
+}
+
+git-pup(){
+    git pull && git submodule init && git submodule update && git submodule status
+}
+
+ips(){
+    local usage="ips [%NETWORK_BASE_IP%] [%BIT_DEPTH%] [ip-only | no-sudo]"$'\n'"Default IP: 192.168.1.0"$'\n'"Default Mask: 24"
+    local addr="$1";
+    local mask="$2";
+    local prefix="";
+    local suffix="";
+
+    # Ensure nmap is installed
+    if ! cmd_exists "nmap"; then
+        printf "nmap is required, please install it!\n"
+        exit 1
+    fi
+
+    # display help if needed
+    if [[ "$@" =~ "help" ]]; then
+      echo "$usage";
+      return 0;
+    fi
+
+    # filter out details if only ips are needed
+    if [[ "$@" =~ "ip-only" ]]; then
+      suffix=" | grep report | awk '{print \$5}'";
+    fi
+
+    # remove sudo if is to be run without it
+    if [[ "$@" =~ "no-sudo" ]]; then
+      prefix="";
+    else
+      prefix="sudo ";
+    fi
+
+    # ensure the subnet mask is between 4 and 32 bits (default to 24)
+    if [[ "$mask" =~ ^[0-9]+$ ]] && [ "$mask" -ge 4 -a "$mask" -le 30 ]; then
+      mask="$mask";
+    else
+      echo "Invalid mask supplied.  Defaulting to 24 bits."
+      mask="24";
+    fi
+
+    # proceed if the first value is a valid IP address
+    if [[ ! $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+      echo "Invalid IP address supplied.  Defaulting to 192.168.1.0."
+      addr="192.168.1.0";
+    fi
+
+    eval "${prefix}nmap $addr/$mask -n -sP${suffix}"
+}
+
+refresh-files(){
+
+    # Compares files in current project (the TARGET_FOLDER)
+    # to files in a stable project (SOURCE_FOLDER) and copies
+    # over local copies with stable version if both exist.
+    # Useful for protecting critical files, such as vendor
+    # source, sensitive data, etc.
+
+    local usage="refresh-files SOURCE_FOLDER [TARGET_FOLDER]"
+    local source="$1";
+    local target="${2:-${PWD}}";
+    local noise="$3";
+    local err="";
+    local relpath="";
+    local from=""
+    local counter=0;
+
+    if [ -z "$source" ]; then
+      err="Source folder not supplied.";
+    elif [ ! -d "$source" ]; then
+      err="Source folder does not exist.";
+    elif [ ! -d "$target" ]; then
+      echo "target: $target"
+      err="Target folder does not exist: $target";
+    elif [ ! -z "$noise" ]; then
+      err="Extra noise supplied in command.";
+    fi
+
+    if [ "$err" != "" ]; then
+      echo "Problem refreshing files: $err";
+      echo ""
+      echo "USAGE: $usage"
+    else
+
+      echo "Refreshing files...";
+      echo "FROM: $source";
+      echo "TO  : $target";
+      echo "-----";
+
+      for file in $(find "$target" -type f -not \( -path "*/node_modules/*" \) -not \( -path "*/bower_components/*" \)); do
+
+        relpath=$(echo "$file" | sed "s@$target@@");
+        from=${source%/}${relpath};
+
+        if [ -f "$from"  ]; then
+          echo "$relpath"
+          eval "cp $from $file";
+          counter=$((counter+1))
+        fi
+
+      done
+
+      echo "-----";
+      echo "Files refreshed: $counter";
+
+    fi
+
+}
+
+ncu-update-all(){
+
+  if ! cmd_exists "ncu"; then
+      printf "ncu is required, please install it!\n"
+      exit 1
+  fi
+
+  for file in $(find . -type f -name "package.json" -not \( -path "*/node_modules/*" \) -not \( -path "*/bower_components/*" \)); do
+
+    if [ -f "$file"  ]; then
+      eval "ncu -a -u --packageFile $file"
+    fi
+
+  done
+
+  for file in $(find . -type f -name "bower.json" -not \( -path "*/node_modules/*" \) -not \( -path "*/bower_components/*" \)); do
+
+    if [ -f "$file"  ]; then
+      eval "ncu -a -u -m bower --packageFile $file"
+    fi
+
+  done
+}
+
+talk(){
+    eval "xsel | festival --tts --pipe"
+}
+
+remove_smaller_files(){
+    LEFT_DIR="$PWD"
+    RIGHT_DIR="$*"
+    echo "LEFT : $LEFT_DIR"
+    echo "RIGHT: $RIGHT_DIR"
+    files="$(find -L "$LEFT_DIR" -type f)"
+    echo "$files" | while read file; do
+        FILE_NAME=${file#$LEFT_DIR}
+        LEFT_FILE="$file"
+        RIGHT_FILE="$RIGHT_DIR""$FILE_NAME"
+        #echo "----------"
+        #echo "Left File : $LEFT_FILE"
+        #echo "Right File: $RIGHT_FILE"
+        if [ -f "$LEFT_FILE" ]; then
+            if [ -f "$RIGHT_FILE" ]; then
+                LEFT_SIZE=( $( ls -Lon "$LEFT_FILE" ) )
+                LEFT_BYTES=${LEFT_SIZE[3]}
+                RIGHT_SIZE=( $( ls -Lon "$RIGHT_FILE" ) )
+                RIGHT_BYTES=${RIGHT_SIZE[3]}
+                #echo "----------"
+                #echo "LEFT_SIZE: $LEFT_SIZE"
+                #echo "LEFT_BYTES: $LEFT_BYTES"
+                #echo "RIGHT_SIZE: $RIGHT_SIZE"
+                #echo "RIGHT_BYTES: $RIGHT_BYTES"
+                if [ "$LEFT_BYTES" -gt "$RIGHT_BYTES" ]; then
+                    echo "REMOVED: $RIGHT_FILE"
+                    eval "rm \"$RIGHT_BYTES\""
+                elif [ "$RIGHT_BYTES" -gt "$LEFT_BYTES" ]; then
+                    echo "REMOVED: $LEFT_FILE"
+                    eval "rm \"$LEFT_FILE\""
+                else
+                    echo "SKIPPED: $FILE_NAME (same size)"
+                fi
+            fi
+        fi
+    done
+}
+
+npmi() {
+    if [ ! -f "$PWD/package.json" ]; then
+        echo "Not an NPM package folder."
+        return 1
+    fi
+    if [ -e "$PWD/node_modules" ]; then
+        echo "Removing old node_modules folder..."
+        eval "rm -rf $PWD/node_modules"
+        if [ -e "$PWD/node_modules" ]; then
+            echo "... failure!"
+            return 1
+        else
+            echo "... done."
+        fi
+    fi
+    echo "Setting Node v16 and installing..."
+
+    export NVM_DIR=$HOME/.nvm;
+    source $NVM_DIR/nvm.sh;
+
+    eval "nvm use 16 && npm i"
+    if [ -e "$PWD/node_modules" ]; then
+        echo "... done."
+    else
+        echo "... failure!"
+        return 1
+    fi
+}
