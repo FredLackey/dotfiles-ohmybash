@@ -20,30 +20,23 @@ brew_install "Visual Studio Code" "visual-studio-code" "--cask"
 printf "\n"
 
 # Install the VSCode plugins
+install_plugin "AWS Toolkit" "amazonwebservices.aws-toolkit-vscode"
+install_plugin "Better Align" "chouzz.vscode-better-align"
+install_plugin "Darkula Official Theme" "dracula-theme.theme-dracula"
+install_plugin "Docker" "ms-azuretools.vscode-docker"
 install_plugin "EditorConfig" "EditorConfig.EditorConfig"
+install_plugin "ES7 React Snippets" "dsznajder.es7-react-js-snippets"
 install_plugin "File Icons" "vscode-icons-team.vscode-icons"
+install_plugin "Fold / Unfold All Icons" "FerrierBenjamin.fold-unfold-all-icone"
+install_plugin "GitHub CoPilot" "GitHub.copilot"
+install_plugin "Live Server" "ritwickdey.LiveServer"
 install_plugin "MarkdownLint" "DavidAnson.vscode-markdownlint"
+install_plugin "Peacock" "johnpapa.vscode-peacock"
+install_plugin "Prettier" "esbenp.prettier-vscode"
+install_plugin "Prisma" "Prisma.prisma"
 # install_plugin "Vim" "vscodevim.vim"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-install_plugin "amazonwebservices.aws-toolkit-vscode" "AWS Toolkit"
-install_plugin "chouzz.vscode-better-align" "Better Align"
-install_plugin "dracula-theme.theme-dracula" "Darkula Official Theme"
-install_plugin "ms-azuretools.vscode-docker" "Docker"
-install_plugin "EditorConfig.EditorConfig" "EditorConfig Support"
-install_plugin "dsznajder.es7-react-js-snippets" "ES7 React Snippets"
-install_plugin "FerrierBenjamin.fold-unfold-all-icone" "Fold / Unfold All Icons"
-install_plugin "GitHub.copilot" "GitHub CoPilot"
-install_plugin "ritwickdey.LiveServer" "Live Server"
-install_plugin "johnpapa.vscode-peacock" "Peacock"
-install_plugin "esbenp.prettier-vscode" "Prettier"
-install_plugin "Prisma.prisma" "Prisma"
-install_plugin "hashicorp.terraform" "Terraform"
-install_plugin "vscode-icons-team.vscode-icons" "VSCode Icons"
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 
 # Close VSCode
 osascript -e 'quit app "Visual Studio Code"'
