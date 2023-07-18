@@ -45,3 +45,9 @@ alias y="yarn"
 # Load OS specific configs.
 
 . "$OS/bash_aliases"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Customizations
+
+alias dp="docker ps --format '{{.ID}}\t{{.Names}}\t{{.Ports}}'"

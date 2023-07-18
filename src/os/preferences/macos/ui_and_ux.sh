@@ -14,8 +14,8 @@ execute "defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool
 execute "defaults write com.apple.menuextra.battery ShowPercent -string 'NO'" \
     "Hide battery percentage from the menu bar"
 
-execute "sudo defaults write /Library/Preferences/com.apple.loginwindow showInputMenu -bool true" \
-    "Show language menu in the top right corner of the boot screen"
+# execute "sudo defaults write /Library/Preferences/com.apple.loginwindow showInputMenu -bool true" \
+#     "Show language menu in the top right corner of the boot screen"
 
 execute "defaults write com.apple.CrashReporter UseUNC 1" \
     "Make crash reports appear as notifications"
@@ -29,8 +29,8 @@ execute "defaults write com.apple.print.PrintingPrefs 'Quit When Finished' -bool
 execute "defaults write com.apple.screencapture disable-shadow -bool true" \
     "Disable shadow in screenshots"
 
-execute "defaults write com.apple.screencapture location -string '$HOME/Desktop'" \
-    "Save screenshots to the Desktop"
+execute "defaults write com.apple.screencapture location -string '$HOME/Screenshots'" \
+    "Save screenshots to the Screenshots folder"
 
 execute "defaults write com.apple.screencapture show-thumbnail -bool false" \
     "Do not show thumbnail"
@@ -57,8 +57,8 @@ execute "defaults write -g NSDisableAutomaticTermination -bool true" \
 execute "defaults write -g NSNavPanelExpandedStateForSaveMode -bool true" \
     "Expand save panel by default"
 
-execute "defaults write -g NSTableViewDefaultSizeMode -int 2" \
-    "Set sidebar icon size to medium"
+# execute "defaults write -g NSTableViewDefaultSizeMode -int 2" \
+#     "Set sidebar icon size to medium"
 
 execute "defaults write -g NSUseAnimatedFocusRing -bool false" \
     "Disable the over-the-top focus ring animation"
@@ -75,31 +75,31 @@ execute "defaults write -g QLPanelAnimationDuration -float 0" \
 execute "defaults write com.apple.systempreferences NSQuitAlwaysKeepsWindows -bool false" \
     "Disable resume system-wide"
 
-execute "sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string 'Laptop' && \
-         sudo scutil --set ComputerName 'laptop' && \
-         sudo scutil --set HostName 'laptop' && \
-         sudo scutil --set LocalHostName 'laptop'" \
-    "Set computer name"
+# execute "sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string 'Laptop' && \
+#          sudo scutil --set ComputerName 'laptop' && \
+#          sudo scutil --set HostName 'laptop' && \
+#          sudo scutil --set LocalHostName 'laptop'" \
+#     "Set computer name"
 
 execute "sudo systemsetup -setrestartfreeze on" \
     "Restart automatically if the computer freezes"
 
-execute "sudo defaults write /Library/Preferences/com.apple.Bluetooth.plist ControllerPowerState 0 && \
-         sudo launchctl unload /System/Library/LaunchDaemons/com.apple.blued.plist && \
-         sudo launchctl load /System/Library/LaunchDaemons/com.apple.blued.plist" \
-    "Turn Bluetooth off"
+# execute "sudo defaults write /Library/Preferences/com.apple.Bluetooth.plist ControllerPowerState 0 && \
+#          sudo launchctl unload /System/Library/LaunchDaemons/com.apple.blued.plist && \
+#          sudo launchctl load /System/Library/LaunchDaemons/com.apple.blued.plist" \
+#     "Turn Bluetooth off"
 
 execute "for domain in ~/Library/Preferences/ByHost/com.apple.systemuiserver.*; do
             sudo defaults write \"\${domain}\" dontAutoLoad -array \
-                '/System/Library/CoreServices/Menu Extras/TimeMachine.menu' \
-                '/System/Library/CoreServices/Menu Extras/Volume.menu'
+                '/System/Library/CoreServices/Menu Extras/TimeMachine.menu'
          done \
             && sudo defaults write com.apple.systemuiserver menuExtras -array \
                 '/System/Library/CoreServices/Menu Extras/Bluetooth.menu' \
                 '/System/Library/CoreServices/Menu Extras/AirPort.menu' \
                 '/System/Library/CoreServices/Menu Extras/Battery.menu' \
+                '/System/Library/CoreServices/Menu Extras/Volume.menu' \
                 '/System/Library/CoreServices/Menu Extras/Clock.menu'
         " \
-    "Hide Time Machine and Volume icons from the menu bar"
+    "Hide Time Machine icon from the menu bar"
 
 killall "SystemUIServer" &> /dev/null
