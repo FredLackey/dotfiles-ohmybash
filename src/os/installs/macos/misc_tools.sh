@@ -43,9 +43,9 @@ brew_install "Postman" "postman"
 brew_install "ngrok" "ngrok" "--cask"
 brew_install "Microsoft Office 365" "microsoft-office" "--cask"
 brew_install "MySQL Workbench" "mysqlworkbench" "--cask"
-brew_install "Terius" "termius" "--cask"
+brew_install "Terimus" "termius" "--cask"
 brew_install "Terraform" "terraform"
-brew_install "yt-dlp" "yt-dlp" "--cask"
+brew_install "yt-dlp" "yt-dlp"
 brew_install "Zoom" "zoom" "--cask"
 
 # if [ ! -d "ls -l /usr/local/bin/python" ]; then
