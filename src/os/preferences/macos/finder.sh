@@ -43,8 +43,8 @@ execute "defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool t
 execute "defaults write com.apple.finder ShowRecentTags -bool false" \
     "Do not show recent tags"
 
-execute "defaults write -g AppleShowAllExtensions -bool true" \
-    "Show all filename extensions"
+execute "defaults write -g AppleShowAllExtensions -bool false" \
+    "Hide all filename extensions"
 
 # execute "/usr/libexec/PlistBuddy -c 'Set :DesktopViewSettings:IconViewSettings:iconSize 72' ~/Library/Preferences/com.apple.finder.plist && \
 #          /usr/libexec/PlistBuddy -c 'Set :StandardViewSettings:IconViewSettings:iconSize 72' ~/Library/Preferences/com.apple.finder.plist" \
