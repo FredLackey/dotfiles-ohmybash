@@ -362,6 +362,25 @@ get-tunes(){
     fi
 }
 
+get-video(){
+    local usage="get-tunes %VIDEO_URL%";
+    local url="$1";
+    if [ -f "/usr/local/bin/yt-dlp" ]; then
+        prefix="/usr/local/bin/";
+    fi
+    if [ -z "${url}" ]; then
+        echo "Problem fetching video: URL not supplied";
+        echo "$usage";
+    else
+        echo "Excluding audio...";
+        # Starting syntax from: https://www.jeffgeerling.com/blog/2022/how-download-mp4-youtube-every-time
+        # yt-dlp -S res,ext:mp4:m4a --recode mp4
+        # yt-dlp -S res,ext:mp4:m4a --recode mp4 --output '%(title)s.%(ext)s' $1
+        # yt-dlp -S res,ext:mp4:m4a --recode mp4 --output '%(title)s.%(ext)s' https://youtu.be/SxwxO8ruabY
+        eval "${prefix}yt-dlp --buffer-size 16K --keep-video --prefer-insecure --format mp4 --ignore-errors --output '%(title)s.%(ext)s' $1";
+    fi
+}
+
 docker-clean(){
     # Delete all containers
     docker rm -f $(docker ps -a -q)
