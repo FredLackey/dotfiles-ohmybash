@@ -304,7 +304,7 @@ get-course(){
     local username="$2";
     local password="$3";
     local prefix="";
-    if [ -e "/usr/local/bin/youtube-dl" ]; then
+    if [ -e "/usr/local/bin/yt-dlp" ]; then
         prefix="/usr/local/bin/";
     fi
     if [ -z "$course" ]; then
@@ -317,7 +317,7 @@ get-course(){
       echo "Problem getting Pluralisight course: Password not supplied"
       echo "$usage"
     else
-      eval "${prefix}youtube-dl --verbose --username $username --password $password --rate-limit 50K --sleep-interval 600 -o \"%(autonumber)s - %(title)s.%(ext)s\" \"https://app.pluralsight.com/library/courses/${course}\""
+      eval "${prefix}yt-dlp --verbose --username $username --password $password --rate-limit 50K --sleep-interval 600 -o \"%(autonumber)s - %(title)s.%(ext)s\" \"https://app.pluralsight.com/library/courses/${course}\""
     fi
 }
 
@@ -325,14 +325,14 @@ get-channel(){
     local usage="get-channel %COURSE_NAME_FROM_URL%";
     local channel="$1";
     local prefix="";
-    if [ -e "/usr/local/bin/youtube-dl" ]; then
+    if [ -e "/usr/local/bin/yt-dlp" ]; then
         prefix="/usr/local/bin/";
     fi
     if [ -z "$channel" ]; then
       echo "Problem getting Youtube channel: Channel name not supplied"
       echo "$usage"
     else
-      eval "${prefix}youtube-dl -f best -ciw -v -o \"%(upload_date)s - %(title)s.%(ext)s\" https://www.youtube.com/user/$channel"
+      eval "${prefix}yt-dlp -f best -ciw -v -o \"%(upload_date)s - %(title)s.%(ext)s\" https://www.youtube.com/user/$channel"
     fi
 }
 
@@ -341,7 +341,7 @@ get-tunes(){
     local url="$1";
     local option="$2";
     local prefix="";
-    if [ -f "/usr/local/bin/youtube-dl" ]; then
+    if [ -f "/usr/local/bin/yt-dlp" ]; then
         prefix="/usr/local/bin/";
     fi
     if [ -z "${url}" ]; then
@@ -349,13 +349,13 @@ get-tunes(){
         echo "$usage";
     elif [ -z "${option}" ]; then
         echo "Fetching audio & video...";
-        eval "${prefix}youtube-dl --buffer-size 16K --keep-video --audio-format mp3 --extract-audio --embed-thumbnail --prefer-insecure --format mp4 --ignore-errors --output '%(title)s.%(ext)s' $1";
+        eval "${prefix}yt-dlp --buffer-size 16K --keep-video --audio-format mp3 --extract-audio --embed-thumbnail --prefer-insecure --format mp4 --ignore-errors --output '%(title)s.%(ext)s' $1";
     elif [[ "$option" == "audio-only" ]]; then
         echo "Excluding video...";
-        eval "${prefix}youtube-dl --buffer-size 16K --audio-format mp3 --extract-audio --embed-thumbnail --prefer-insecure --ignore-errors --output '%(title)s.%(ext)s' $1";
+        eval "${prefix}yt-dlp --buffer-size 16K --audio-format mp3 --extract-audio --embed-thumbnail --prefer-insecure --ignore-errors --output '%(title)s.%(ext)s' $1";
     elif [[ "$option" == "video-only" ]]; then
         echo "Excluding audio...";
-        eval "${prefix}youtube-dl --buffer-size 16K --keep-video --prefer-insecure --format mp4 --ignore-errors --output '%(title)s.%(ext)s' $1";
+        eval "${prefix}yt-dlp --buffer-size 16K --keep-video --prefer-insecure --format mp4 --ignore-errors --output '%(title)s.%(ext)s' $1";
     else
         echo "Problem fetching track: Unknown option supplied ($option)";
         echo "$usage";
