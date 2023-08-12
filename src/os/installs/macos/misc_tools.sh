@@ -37,6 +37,8 @@ brew_install "Draw.IO" "drawio" "--cask"
 brew_install "Elmedia Player" "elmedia-player" "--cask"
 brew_install "Evernote" "evernote" "--cask"
 
+brew_install "Keyboard Maestro" "keyboard-maestro" "--cask"
+
 brew_install "Messenger" "messenger" "--cask"
 brew_install "Microsoft Office 365" "microsoft-office" "--cask"
 brew_install "Microsoft Teams" "microsoft-teams" "--cask"
@@ -63,6 +65,9 @@ brew_install "Sublime Text" "sublime-text"
 
 brew_install "Termius" "termius" "--cask"
 brew_install "Terraform" "terraform"
+
+#WhatsApp
+open "macappstores://itunes.apple.com/en/app/xcode/id1147396723"
 
 brew_install "yt-dlp" "yt-dlp"
 
