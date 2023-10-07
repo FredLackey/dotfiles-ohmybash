@@ -22,26 +22,26 @@ install_package "Curl" "curl"
 install_package "Software Properties (Common)" "software-properties-common"
 install_package "GNU Privacy Guard" "gnupg"
 
-execute \
-  "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -" \
-  "Docker (add keys)"
+# execute \
+#   "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -" \
+#   "Docker (add keys)"
 
-execute \
-  "sudo apt-key fingerprint 0EBFCD88" \
-  "Docker (add fingerprint)"
+# execute \
+#   "sudo apt-key fingerprint 0EBFCD88" \
+#   "Docker (add fingerprint)"
 
-execute \
-  "sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\"" \
-  "Docker (add repository)"
+# execute \
+#   "sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\"" \
+#   "Docker (add repository)"
 
-execute \
-  "sudo apt update" \
-  "Docker (update)"
+# execute \
+#   "sudo apt update" \
+#   "Docker (update)"
 
-install_package "Docker CE" "docker-ce"
+# install_package "Docker CE" "docker-ce"
 
-execute \
-  "sudo usermod -aG docker $USER" \
-  "Docker (update group)"
+# execute \
+#   "sudo usermod -aG docker $USER" \
+#   "Docker (update group)"
 
-install_package "Docker Compose" "docker-compose"
+# install_package "Docker Compose" "docker-compose"
