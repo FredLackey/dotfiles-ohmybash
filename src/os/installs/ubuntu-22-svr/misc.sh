@@ -22,22 +22,22 @@ install_package "Curl" "curl"
 install_package "Software Properties (Common)" "software-properties-common"
 install_package "GNU Privacy Guard" "gnupg"
 
-if ! package_is_installed "docker.io"; then
+if package_is_installed "docker.io"; then
     execute \
     "sudo apt-get remove docker.io" \
     "Docker (remove docker.io)"
 fi
-if ! package_is_installed "docker-compose"; then
+if package_is_installed "docker-compose"; then
     execute \
     "sudo apt-get remove docker-compose" \
     "Docker (remove docker-compose)"
 fi
-if ! package_is_installed "containerd"; then
+if package_is_installed "containerd"; then
     execute \
     "sudo apt-get remove containerd" \
     "Docker (remove containerd)"
 fi
-if ! package_is_installed "runc"; then
+if package_is_installed "runc"; then
     execute \
     "sudo apt-get remove runc" \
     "Docker (remove runc)"
