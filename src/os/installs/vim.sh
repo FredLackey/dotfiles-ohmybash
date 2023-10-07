@@ -31,7 +31,7 @@ main() {
 
     print_in_purple "\n   Vim\n\n"
 
-    "./$(get_os)/vim.sh"
+    "./$(get_os_name)/vim.sh"
     install_plugins
 
 }

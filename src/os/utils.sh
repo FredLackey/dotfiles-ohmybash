@@ -137,6 +137,39 @@ get_os() {
 
 }
 
+get_os_name() {
+
+    local os=""
+
+    local version=""
+    local id=""
+    local int=""
+    local name=""
+    local envflag=""
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    os="$(get_os)"
+
+    if [ "$os" == "macos" ]; then
+        version="macos"
+    elif [ -e "/etc/os-release" ]; then
+        if [ -z "$XDG_CURRENT_DESKTOP" ]; then
+          envflag="-svr"
+        else
+          envflag="-wks"
+        fi
+        id="$(. /etc/os-release; printf "%s" "$ID")"
+        version_id="$(. /etc/os-release; printf "%s" "$VERSION_ID")"
+        parts=(`echo $version_id | tr '.' ' '`)
+        int=${parts[0]}
+        version="$id""-""$int""$envflag"
+
+    fi
+
+    printf "%s" "$version"
+
+}
 get_os_version() {
 
     local os=""
