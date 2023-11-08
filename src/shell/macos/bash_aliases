@@ -75,4 +75,7 @@ alias hide-hidden-files="defaults write com.apple.finder AppleShowAllFiles -bool
                             && killall Finder"
 alias show-hidden-files="defaults write com.apple.finder AppleShowAllFiles -bool true \
                             && killall Finder"
+
 alias iprisma="npm i --save-dev prisma@latest && npm i @prisma/client@latest"
+alias code-all="find . -type d -depth 1 -exec code {} \;"
+

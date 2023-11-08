@@ -586,12 +586,12 @@ npmi() {
             echo "... done."
         fi
     fi
-    echo "Setting Node v16 and installing..."
+    echo "Setting Node v18 and installing..."
 
     export NVM_DIR=$HOME/.nvm;
     source $NVM_DIR/nvm.sh;
 
-    eval "nvm use 16 && npm i"
+    eval "nvm use 18 && npm i"
     if [ -e "$PWD/node_modules" ]; then
         echo "... done."
     else
