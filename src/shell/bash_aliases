@@ -51,3 +51,6 @@ alias y="yarn"
 # Customizations
 
 alias dp="docker ps --format '{{.ID}}\t{{.Names}}\t{{.Ports}}'"
+alias iprisma="npm i --save-dev prisma@latest && npm i @prisma/client@latest"
+alias code-all="find . -type d -depth 1 -exec code {} \;"
+
