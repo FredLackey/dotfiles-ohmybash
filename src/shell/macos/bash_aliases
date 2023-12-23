@@ -78,4 +78,4 @@ alias show-hidden-files="defaults write com.apple.finder AppleShowAllFiles -bool
 
 alias iprisma="npm i --save-dev prisma@latest && npm i @prisma/client@latest"
 alias code-all="find . -type d -depth 1 -exec code {} \;"
-
+alias packages="find ./ -type f -name \"package.json\" -exec stat -f \"%Sm %N\" -t \"%Y-%m-%d %H:%M:%S\" {} + | grep -v \"node_modules\" | sort -n"
