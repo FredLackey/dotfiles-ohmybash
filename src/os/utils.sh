@@ -154,7 +154,9 @@ get_os_name() {
     if [ "$os" == "macos" ]; then
         version="macos"
     elif [ -e "/etc/os-release" ]; then
-        if [ -z "$XDG_CURRENT_DESKTOP" ]; then
+        if [ -z "/mnt/c" ]; then
+          envflag="-wsl"
+        elif [ -z "$XDG_CURRENT_DESKTOP" ]; then
           envflag="-svr"
         else
           envflag="-wks"
