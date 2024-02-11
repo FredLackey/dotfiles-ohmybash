@@ -389,7 +389,21 @@ get-folder() {
     # Check if rsync command exists
     if command -v rsync &> /dev/null; then
         # Use rsync if available
-        rsync -avP "$source" "$target"
+        for file in "$source"*; do
+            filename=$(basename "$file")
+            if [ -f "$target$filename" ]; then
+                # Check if file size matches
+                source_size=$(stat -c %s "$file")
+                target_size=$(stat -c %s "$target$filename")
+                if [ "$source_size" -eq "$target_size" ]; then
+                    echo "Skipping $filename as it already exists and has the same size."
+                else
+                    rsync -avP "$file" "$target"
+                fi
+            else
+                rsync -avP "$file" "$target"
+            fi
+        done
     # Check if robocopy command exists (assuming it's run from Git Bash on Windows)
     elif command -v robocopy &> /dev/null; then
         # Use robocopy equivalent syntax
