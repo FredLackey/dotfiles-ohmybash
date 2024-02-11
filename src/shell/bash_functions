@@ -381,6 +381,25 @@ get-video(){
     fi
 }
 
+get-folder() {
+    # Ensure source and target paths end with a forward slash
+    source="${1%/}/"
+    target="${2%/}/"
+
+    # Check if rsync command exists
+    if command -v rsync &> /dev/null; then
+        # Use rsync if available
+        rsync -avP "$source" "$target"
+    # Check if robocopy command exists (assuming it's run from Git Bash on Windows)
+    elif command -v robocopy &> /dev/null; then
+        # Use robocopy equivalent syntax
+        robocopy "$source" "$target" /E /Z /W:1 /R:3
+    else
+        echo "Error: Neither rsync nor robocopy command found."
+        return 1
+    fi
+}
+
 docker-clean(){
     # Delete all containers
     docker rm -f $(docker ps -a -q)
