@@ -21,7 +21,7 @@ printf "\n"
 
 # Install the VSCode plugins
 install_plugin "AWS Toolkit" "amazonwebservices.aws-toolkit-vscode"
-install_plugin "Better Align" "chouzz.vscode-better-align"
+# install_plugin "Better Align" "chouzz.vscode-better-align"
 install_plugin "Darkula Official Theme" "dracula-theme.theme-dracula"
 install_plugin "Docker" "ms-azuretools.vscode-docker"
 install_plugin "EditorConfig" "EditorConfig.EditorConfig"
