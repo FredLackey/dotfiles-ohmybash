@@ -65,6 +65,7 @@ brew_install "Sublime Text" "sublime-text"
 
 brew_install "Termius" "termius" "--cask"
 brew_install "Terraform" "terraform"
+brew_install "Twilio" "twilio/brew/twilio"
 
 #WhatsApp
 open "macappstores://itunes.apple.com/en/app/xcode/id1147396723"
