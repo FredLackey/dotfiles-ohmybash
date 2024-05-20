@@ -65,8 +65,11 @@ brew_install "Sublime Text" "sublime-text"
 
 brew_install "Termius" "termius" "--cask"
 brew_install "Terraform" "terraform"
-brew_install "Tidal" "tidal" "--cask"
 brew_install "Twilio" "twilio/brew/twilio"
+
+execute \
+    "twilio autocomplete bash" \
+    "Twilio Autocomplete"
 
 #WhatsApp
 open "macappstores://itunes.apple.com/en/app/xcode/id1147396723"
@@ -74,6 +77,7 @@ open "macappstores://itunes.apple.com/en/app/xcode/id1147396723"
 brew_install "yt-dlp" "yt-dlp"
 
 brew_install "Zoom" "zoom" "--cask"
+
 
 # if [ ! -d "ls -l /usr/local/bin/python" ]; then
 #   execute \

@@ -105,3 +105,8 @@ fi
 # Make Python use UTF-8 encoding for output to stdin/stdout/stderr.
 
 export PYTHONIOENCODING="UTF-8"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+twilio autocomplete:script bash
+
