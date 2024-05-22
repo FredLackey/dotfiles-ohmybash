@@ -21,6 +21,7 @@ install_package "CA Certificates" "ca-certificates"
 install_package "Curl" "curl"
 install_package "Software Properties (Common)" "software-properties-common"
 install_package "GNU Privacy Guard" "gnupg"
+install_package "NETStat" "net-tools"
 
 if package_is_installed "docker.io"; then
     execute \
