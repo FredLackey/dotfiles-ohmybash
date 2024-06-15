@@ -632,3 +632,113 @@ npmi() {
         return 1
     fi
 }
+
+get-dependencies() {
+    local package_json_path="$1"
+    local dependency_type_prefix="${2:-dependencies}"
+    local dependency_type=""
+
+    # Check if jq is installed
+    if ! command -v jq &> /dev/null; then
+        echo "Error: jq command is not installed. Please install jq and try again."
+        return 1
+    fi
+
+    # Check if a path was provided
+    if [[ -z "$package_json_path" ]]; then
+        echo "Usage: extract_dependencies /path/to/package.json [dependency_type_prefix]"
+        echo "Example: extract_dependencies /path/to/package.json dev"
+        return 1
+    fi
+
+    # Check if the package.json file exists
+    if [[ ! -f "$package_json_path" ]]; then
+        echo "Error: File not found: $package_json_path"
+        return 1
+    fi
+
+    # Determine the full dependency type based on the prefix if provided
+    if [[ -z "$dependency_type_prefix" ]]; then
+        dependency_type="dependencies"
+    else
+        case "$dependency_type_prefix" in
+            dev)
+                dependency_type="devDependencies"
+                ;;
+            peer)
+                dependency_type="peerDependencies"
+                ;;
+            opt)
+                dependency_type="optionalDependencies"
+                ;;
+            bundle)
+                dependency_type="bundledDependencies"
+                ;;
+            dependencies)
+                dependency_type="dependencies"
+                ;;
+            *)
+                echo "Error: Invalid dependency type prefix. Valid prefixes are: dev, peer, opt, bundle, dependencies."
+                return 1
+                ;;
+        esac
+    fi
+
+    # Check if the dependency type node exists and is not null
+    node_exists=$(jq -e --arg depType "$dependency_type" '.[$depType] != null' "$package_json_path")
+    if [[ $? -ne 0 || "$node_exists" != "true" ]]; then
+        return 0
+    fi
+
+    # Extract dependencies using jq
+    dependencies=$(jq -r --arg depType "$dependency_type" '.[$depType] | keys[]?' "$package_json_path")
+    if [[ -z "$dependencies" ]]; then
+        return 0
+    fi
+
+    echo "$dependencies"
+}
+
+install-dependencies-from() {
+    local package_json_path="$1"
+    local dependency_type_prefix="${2:-dependencies}"
+    local dependencies
+    local npm_flag=""
+
+    # Determine the npm flag based on the dependency type
+    case "$dependency_type_prefix" in
+        dev)
+            npm_flag="--save-dev"
+            ;;
+        peer)
+            npm_flag="--save-peer"
+            ;;
+        opt)
+            npm_flag="--save-optional"
+            ;;
+        bundle)
+            npm_flag="--save-bundled"
+            ;;
+        dependencies)
+            npm_flag="--save"
+            ;;
+        *)
+            echo "Error: Invalid dependency type prefix. Valid prefixes are: dev, peer, opt, bundle, dependencies."
+            return 1
+            ;;
+    esac
+
+    # Extract dependencies
+    dependencies=$(get-dependencies "$package_json_path" "$dependency_type_prefix")
+
+    if [[ -z "$dependencies" ]]; then
+        echo "No dependencies to install."
+        return 0
+    fi
+
+    # Install each dependency
+    for dependency in $dependencies; do
+        echo "Installing $dependency..."
+        npm install "$dependency@latest" $npm_flag
+    done
+}

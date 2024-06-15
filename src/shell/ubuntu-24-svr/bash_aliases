@@ -45,3 +45,4 @@ alias iprisma="npm i --save-dev prisma@latest && npm i @prisma/client@latest"
 alias packages="find ./ -type f -name \"package.json\" -exec stat --format=\"%Y %n\" {} + | grep -v \"node_modules\" sort -n | awk '{print strftime("%Y-%m-%d %H:%M:%S", $1), $2}'"
 
 alias ports="sudo netstat -tulnp | grep LISTEN"
+alias local-ip='hostname -I | awk '\''{print $1}'\''
