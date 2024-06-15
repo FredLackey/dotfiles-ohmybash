@@ -68,6 +68,10 @@ create_symlinks() {
                     rm -rf "$targetFile"
 
                     execute \
+                        "cp $targetFile $targetFile-original" \
+                        "Backup $targetFile"
+
+                    execute \
                         "ln -fs $sourceFile $targetFile" \
                         "$targetFile → $sourceFile"
 
