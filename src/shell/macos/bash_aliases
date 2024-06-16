@@ -68,7 +68,7 @@ alias iso="TZ=America/Los_Angeles date -Iseconds"
 
 # Get local network info.
 alias local-ip="ipconfig getifaddr en1"
-alias ports="lsof -P -iTCP -sTCP:LISTEN"
+alias ports="lsof -i -P -n"
 
 # Hide/Show hidden files in Finder.
 alias hide-hidden-files="defaults write com.apple.finder AppleShowAllFiles -bool false \

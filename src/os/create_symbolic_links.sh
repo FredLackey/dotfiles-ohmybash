@@ -5,6 +5,14 @@ cd "$(dirname "${BASH_SOURCE[0]}")" \
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+backup_bash_files() {
+    for file in $HOME/.bash*; do
+        if [ -f "$file" ]; then
+            cp "$file" "$HOME/${file##*/}-original"
+        fi
+    done
+}
+
 create_symlinks() {
 
     declare -a FILES_TO_SYMLINK=(
@@ -45,6 +53,10 @@ create_symlinks() {
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    execute \
+        "cp $targetFile $targetFile-original" \
+        "Backup $targetFile"
+
     for i in "${FILES_TO_SYMLINK[@]}"; do
 
         sourceFile="$(cd .. && pwd)/$i"
@@ -68,10 +80,6 @@ create_symlinks() {
                     rm -rf "$targetFile"
 
                     execute \
-                        "cp $targetFile $targetFile-original" \
-                        "Backup $targetFile"
-
-                    execute \
                         "ln -fs $sourceFile $targetFile" \
                         "$targetFile → $sourceFile"
 
@@ -90,8 +98,13 @@ create_symlinks() {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 main() {
+
+    print_in_purple "\n • Backup Original Bash Files\n\n"
+    backup_bash_files "$@"
+
     print_in_purple "\n • Create symbolic links\n\n"
     create_symlinks "$@"
+
 }
 
 main "$@"
