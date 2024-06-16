@@ -55,10 +55,6 @@ create_symlinks() {
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    execute \
-        "cp $targetFile $targetFile-original" \
-        "Backup $targetFile"
-
     for i in "${FILES_TO_SYMLINK[@]}"; do
 
         sourceFile="$(cd .. && pwd)/$i"
