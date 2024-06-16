@@ -6,10 +6,8 @@ cd "$(dirname "${BASH_SOURCE[0]}")" \
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 backup_bash_files() {
-    for file in "$HOME"/.bash*; do
-        if [ -f "$file" ]; then
-            cp "$file" "${file}-original"
-        fi
+    find "$HOME" -maxdepth 1 -name ".bash*" -type f | while IFS= read -r file; do
+        cp "$file" "${file}-original"
     done
 }
 
