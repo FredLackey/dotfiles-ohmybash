@@ -7,7 +7,11 @@ cd "$(dirname "${BASH_SOURCE[0]}")" \
 
 backup_bash_files() {
     find "$HOME" -maxdepth 1 -name ".bash*" -type f | while IFS= read -r file; do
-        cp "$file" "${file}-original"
+        if [ -e "${file}-original" ]; then
+            print_error "Backup of ${file} already exists"
+        else
+            execute "cp $file ${file}-original" "Backup $file"
+        fi
     done
 }
 
