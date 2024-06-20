@@ -72,7 +72,8 @@ execute \
     "Twilio Autocomplete"
 
 #WhatsApp
-open "macappstores://itunes.apple.com/en/app/xcode/id1147396723"
+# open "macappstores://itunes.apple.com/en/app/xcode/id1147396723"
+open "macappstores://itunes.apple.com/en/app/xcode/id310633997"
 
 brew_install "yt-dlp" "yt-dlp"
 
