@@ -76,6 +76,9 @@ execute \
 # open "macappstores://itunes.apple.com/en/app/xcode/id1147396723"
 open "macappstores://itunes.apple.com/en/app/xcode/id310633997"
 
+#LanScan
+open "macappstores://itunes.apple.com/en/app/lanscan/id472226235"
+
 brew_install "yt-dlp" "yt-dlp"
 
 brew_install "Zoom" "zoom" "--cask"
