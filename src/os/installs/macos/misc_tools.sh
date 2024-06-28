@@ -38,6 +38,8 @@ brew_install "Draw.IO" "drawio" "--cask"
 brew_install "Elmedia Player" "elmedia-player" "--cask"
 brew_install "Evernote" "evernote" "--cask"
 
+brew_install "Go" "go" "--cask"
+
 brew_install "Keyboard Maestro" "keyboard-maestro" "--cask"
 
 brew_install "Messenger" "messenger" "--cask"
