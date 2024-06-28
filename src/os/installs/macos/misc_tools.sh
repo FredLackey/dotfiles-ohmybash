@@ -66,6 +66,7 @@ brew_install "Sublime Text" "sublime-text"
 
 brew_install "Termius" "termius" "--cask"
 brew_install "Terraform" "terraform"
+brew_install "Tidal" "tidal" "--cask"
 brew_install "Twilio" "twilio/brew/twilio"
 
 execute \
