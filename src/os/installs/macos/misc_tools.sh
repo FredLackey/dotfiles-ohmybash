@@ -66,6 +66,7 @@ brew_install "Spotify" "spotify" "--cask"
 brew_install "Studio 3T" "studio-3t" "--cask"
 brew_install "Sublime Text" "sublime-text"
 
+brew_install "Tailscale" "tailscale"
 brew_install "Termius" "termius" "--cask"
 brew_install "Terraform" "terraform"
 brew_install "Tidal" "tidal" "--cask"
