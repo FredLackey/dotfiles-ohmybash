@@ -21,6 +21,7 @@ brew_install "AppCleaner" "appcleaner" "--cask"
 brew_install "AWS CLI" "awscli"
 
 brew_install "Bambu Studio" "bambu-studio" "--cask"
+brew_install "Baslena Etcher" "balenaetcher" "--cask"
 brew_install "Beyond Compare" "beyond-compare" "--cask"
 
 brew_install "Caffeine" "caffeine" "--cask"
