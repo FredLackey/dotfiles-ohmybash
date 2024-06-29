@@ -32,7 +32,7 @@ brew_install "DataGrip" "datagrip" "--cask"
 brew_install "DbSchema" "dbschema" "--cask"
 brew_install "DitialOcean Client API Tool" "doctl"
 brew_install "Divvy" "divvy" "--cask"
-# brew_install "Docker" "docker"
+brew_install "Docker" "docker" "--cask"
 brew_install "Draw.IO" "drawio" "--cask"
 # brew_install "Dropbox" "dropbox" "--cask"
 
