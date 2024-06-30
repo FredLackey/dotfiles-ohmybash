@@ -12,6 +12,7 @@ install_package "cURL" "curl"
 
 install_package "ShellCheck" "shellcheck"
 
+install_package "Tailscale" "tailscale"
 install_package "Tree" "tree"
 
 
