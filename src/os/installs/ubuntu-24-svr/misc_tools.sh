@@ -12,9 +12,12 @@ install_package "cURL" "curl"
 
 install_package "ShellCheck" "shellcheck"
 
-install_package "Tailscale" "tailscale"
+if ! package_is_installed "tailscale"; then
+    execute \
+    "curl -fsSL https://tailscale.com/install.sh | sh" \
+    "Tailscale"
+fi
 install_package "Tree" "tree"
-
 
 # install_package "xclip" "xclip"
 
