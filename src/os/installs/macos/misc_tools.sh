@@ -25,7 +25,7 @@ brew_install "Baslena Etcher" "balenaetcher" "--cask"
 brew_install "Beyond Compare" "beyond-compare" "--cask"
 
 brew_install "Caffeine" "caffeine" "--cask"
-# brew_install "Camtasia" "camtasia" "--cask"
+brew_install "Camtasia" "camtasia" "--cask"
 brew_install "Cloud Mounter" "cloudmounter" "--cask"
 
 brew_install "DataGrip" "datagrip" "--cask"
