@@ -43,6 +43,8 @@ brew_install "Go" "go" "--cask"
 
 brew_install "Keyboard Maestro" "keyboard-maestro" "--cask"
 
+brew_install "Loopback" "loopback" "--cask"
+
 brew_install "Messenger" "messenger" "--cask"
 brew_install "Microsoft Office 365" "microsoft-office" "--cask"
 brew_install "Microsoft Teams" "microsoft-teams" "--cask"
