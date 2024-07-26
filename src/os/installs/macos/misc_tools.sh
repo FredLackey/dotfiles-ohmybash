@@ -43,6 +43,7 @@ brew_install "Go" "go" "--cask"
 
 brew_install "Keyboard Maestro" "keyboard-maestro" "--cask"
 
+brew_install "LFTP" "lftp"
 brew_install "Loopback" "loopback" "--cask"
 
 brew_install "Messenger" "messenger" "--cask"
