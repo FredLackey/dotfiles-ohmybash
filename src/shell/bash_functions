@@ -742,3 +742,24 @@ install-dependencies-from() {
         npm install "$dependency@latest" $npm_flag
     done
 }
+
+rm_safe() {
+    # Check if the arguments contain "/"
+    for arg in "$@"; do
+        if [ "$arg" = "/" ]; then
+            echo "Error: Attempt to remove the root directory is forbidden!"
+            return 1
+        fi
+    done
+
+    # Check if the arguments contain "--no-preserve-root"
+    for arg in "$@"; do
+        if [ "$arg" = "--no-preserve-root" ]; then
+            echo "Error: Use of --no-preserve-root is forbidden!"
+            return 1
+        fi
+    done
+
+    # Run the actual rm command with the original arguments
+    command rm "$@"
+}
