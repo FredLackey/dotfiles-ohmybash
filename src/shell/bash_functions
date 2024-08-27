@@ -744,10 +744,23 @@ install-dependencies-from() {
 }
 
 rm_safe() {
-    # Check if the arguments contain "/"
+    # Iterate over the arguments
     for arg in "$@"; do
+        # Check if the argument is the root directory "/"
         if [ "$arg" = "/" ]; then
             echo "Error: Attempt to remove the root directory is forbidden!"
+            return 1
+        fi
+
+        # Check if the argument is any single directory in the root (e.g., "/bin", "/etc")
+        if [[ "$arg" =~ ^/[^/]+$ ]]; then
+            echo "Error: Attempt to remove a top-level directory is forbidden!"
+            return 1
+        fi
+
+        # Check if the argument is the wildcard pattern "/*"
+        if [ "$arg" = "/*" ]; then
+            echo "Error: Attempt to remove all files and directories in the root is forbidden!"
             return 1
         fi
     done
