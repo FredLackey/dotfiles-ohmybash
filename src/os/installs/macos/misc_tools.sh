@@ -90,6 +90,8 @@ open "macappstores://itunes.apple.com/en/app/xcode/id310633997"
 #LanScan
 open "macappstores://itunes.apple.com/en/app/lanscan/id472226235"
 
+brew_install "WhatsApp" "whatsapp" "--cask"
+
 brew_install "yt-dlp" "yt-dlp"
 
 brew_install "Zoom" "zoom" "--cask"
