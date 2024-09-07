@@ -77,6 +77,7 @@ brew_install "Tailscale" "tailscale"
 brew_install "Termius" "termius" "--cask"
 brew_install "Terraform" "terraform"
 brew_install "Tidal" "tidal" "--cask"
+brew_install "Thunderbird" "thunderbird" "--cask"
 brew_install "Twilio" "twilio/brew/twilio"
 
 execute \
