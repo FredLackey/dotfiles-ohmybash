@@ -95,6 +95,7 @@ brew_install "Visual Studio Code" "visual-studio-code" "--cask"
 brew_install "VMWare Fusion" "vmware-fusion" "--cask"
 
 brew_install "WhatsApp" "whatsapp" "--cask"
+brew_install "Wireshark" "wireshark"
 
 brew_install "yt-dlp" "yt-dlp"
 
