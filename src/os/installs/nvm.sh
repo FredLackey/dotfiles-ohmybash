@@ -41,8 +41,8 @@ install_latest_stable_node() {
 
     execute \
         ". $LOCAL_SHELL_CONFIG_FILE \
-            && nvm install 18" \
-        "Install Node 18"
+            && nvm install 20" \
+        "Install Node 20"
 }
 
 install_nvm() {
