@@ -63,6 +63,7 @@ brew_install "Postman" "postman"
 
 brew_install "QFinder Pro" "qfinder-pro" "--cask"
 
+brew_install "SAM CLI" "aws-sam-cli"
 # brew_install "Shottr" "shottr" "--cask"
 # brew_install "Signal" "signal" "--cask"
 brew_install "SiteSucker" "sitesucker-pro" "--cask"
