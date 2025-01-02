@@ -28,6 +28,7 @@ brew_install "Caffeine" "caffeine" "--cask"
 brew_install "Camtasia" "camtasia" "--cask"
 brew_install "ChatGPT" "chatgpt" "--cask"
 brew_install "Cloud Mounter" "cloudmounter" "--cask"
+brew_install "Cursor" "cursor" "--cask"
 
 brew_install "DataGrip" "datagrip" "--cask"
 brew_install "DbSchema" "dbschema" "--cask"
@@ -63,6 +64,7 @@ brew_install "Postman" "postman"
 
 brew_install "QFinder Pro" "qfinder-pro" "--cask"
 
+brew_install "SAM CLI" "aws-sam-cli"
 # brew_install "Shottr" "shottr" "--cask"
 # brew_install "Signal" "signal" "--cask"
 brew_install "SiteSucker" "sitesucker-pro" "--cask"
