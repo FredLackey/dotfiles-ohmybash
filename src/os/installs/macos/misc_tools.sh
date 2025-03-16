@@ -33,7 +33,7 @@ brew_install "Cursor" "cursor" "--cask"
 # brew_install "DataGrip" "datagrip" "--cask"
 brew_install "DbSchema" "dbschema" "--cask"
 # brew_install "DitialOcean Client API Tool" "doctl"
-brew_install "Divvy" "divvy" "--cask"
+# brew_install "Divvy" "divvy" "--cask"
 brew_install "Docker" "docker" "--cask"
 brew_install "Draw.IO" "drawio" "--cask"
 # brew_install "Dropbox" "dropbox" "--cask"
@@ -92,6 +92,9 @@ open "macappstores://itunes.apple.com/en/app/xcode/id310633997"
 
 #LanScan
 open "macappstores://itunes.apple.com/en/app/lanscan/id472226235"
+
+#Magnet
+open "macappstores://itunes.apple.com/en/app/lanscan/id441258766"
 
 brew_install "Visual Studio Code" "visual-studio-code" "--cask"
 # brew_install "VMWare Fusion" "vmware-fusion" "--cask"
