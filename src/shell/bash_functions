@@ -3,6 +3,10 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Clone a repository and install its dependencies.
+#
+# Usage example:
+#
+#   clone https://github.com/user/repo.git
 
 clone() {
 
@@ -40,6 +44,10 @@ clone() {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Create data URI from a file.
+#
+# Usage example:
+#
+#   datauri image.png
 
 datauri() {
 
@@ -66,6 +74,11 @@ datauri() {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Delete files that match a certain pattern from the current directory.
+#
+# Usage example:
+#
+#   delete-files "*.log"  # Delete all .log files
+#   delete-files          # Delete all .DS_Store files (default)
 
 delete-files() {
     local q="${1:-*.DS_Store}"
@@ -74,7 +87,12 @@ delete-files() {
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Execute Vim macro
+# Execute Vim macro on specified files.
+#
+# Usage example:
+#
+#   evm file1.txt file2.txt 3  # Run macro 'q' 3 times on file1.txt and file2.txt
+#   evm file.txt             # Run macro 'q' 1 time on file.txt
 
 evm() {
 
@@ -100,7 +118,11 @@ evm() {
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Search history.
+# Search history using grep and less.
+#
+# Usage example:
+#
+#   h "git commit"
 
 h() {
     #           ┌─ Enable colors for pipe.
@@ -213,7 +235,11 @@ resize-image() {
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Search for text within the current directory.
+# Search for text within the current directory using grep and less.
+#
+# Usage example:
+#
+#   s "my_variable"
 
 s() {
     grep --color=always "$*" \
@@ -229,21 +255,38 @@ s() {
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Cutomizations
+# Remove development artifact directories like `node_modules` and `bower_components`.
+#
+# Usage example:
+#
+#   clean-dev
 
-# Delete files that match a certain pattern from the current directory.
 clean-dev() {
     sudo find . -name "node_modules" -exec rm -rf '{}' +
     find . -name "bower_components" -exec rm -rf '{}' +
 }
 
-# Kill off Node Inspector
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Kill Node Inspector processes.
+#
+# Usage example:
+#
+#   killni
+
 killni() {
     killni_target='node --debug-brk'
     ps -ef | grep "$killni_target" | grep -v grep | awk '{print $2}' | xargs kill -9
 }
 
-# Push the Node project while using the version for the commit message.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Commit and push a Node project using the package version as the commit message.
+#
+# Usage example:
+#
+#   vpush
+
 vpush() {
 
     # Ensure JQ is installed
@@ -260,10 +303,26 @@ vpush() {
 
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Set git user email and name to public defaults.
+#
+# Usage example:
+#
+#   set-git-public
+
 set-git-public(){
     git config user.email "fred.lackey@gmail.com"
     git config user.name "Fred Lackey"
 }
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Back up the ~/Source directory using rsync.
+#
+# Usage example:
+#
+#   backup-source /path/to/backups/
 
 backup-source(){
     backupdir="$*$(date +"%Y%m%d%H%M%S")/"
@@ -272,6 +331,14 @@ backup-source(){
     eval "$backupcmd"
     cd "$backupdir"
 }
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Back up various user directories using rsync.
+#
+# Usage example:
+#
+#   backup-all /path/to/backups/
 
 backup-all(){
 
@@ -290,6 +357,14 @@ backup-all(){
     ls -la
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Organize files in the current directory into subdirectories based on date in filename.
+#
+# Usage example:
+#
+#   org-by-date
+
 org-by-date(){
     ls -A1 | grep -E '[0-9]{4}-[0-9]{2}-[0-9]{2}' | while read -r line; do
         DNAME="$(echo $line | grep -Eo '[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}' | sed 's#-#/#g')"
@@ -297,6 +372,14 @@ org-by-date(){
         mv "$line" "./$DNAME/"
     done
 }
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Download a Pluralsight course using yt-dlp.
+#
+# Usage example:
+#
+#   get-course course-name-from-url username password
 
 get-course(){
     local usage="get-course %COURSE_NAME_FROM_URL% %USERNAME% %PASSWORD%";
@@ -321,6 +404,14 @@ get-course(){
     fi
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Download videos from a YouTube channel using yt-dlp.
+#
+# Usage example:
+#
+#   get-channel channelName
+
 get-channel(){
     local usage="get-channel %COURSE_NAME_FROM_URL%";
     local channel="$1";
@@ -335,6 +426,15 @@ get-channel(){
       eval "${prefix}yt-dlp -f best -ciw -v -o \"%(upload_date)s - %(title)s.%(ext)s\" https://www.youtube.com/user/$channel"
     fi
 }
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Download audio or video from a URL using yt-dlp.
+#
+# Usage example:
+#
+#   get-tunes https://www.youtube.com/watch?v=video_id audio-only
+#   get-tunes https://www.youtube.com/playlist?list=playlist_id
 
 get-tunes(){
     local usage="get-tunes %PLAYLIST_OR_VIDEO_URL% [audio-only | video-only]";
@@ -362,6 +462,14 @@ get-tunes(){
     fi
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Download video from a URL using yt-dlp.
+#
+# Usage example:
+#
+#   get-video https://www.youtube.com/watch?v=video_id
+
 get-video(){
     local usage="get-tunes %VIDEO_URL%";
     local url="$1";
@@ -380,6 +488,15 @@ get-video(){
         eval "${prefix}yt-dlp --buffer-size 16K --keep-video --prefer-insecure --format mp4 --ignore-errors --output '%(title)s.%(ext)s' $1";
     fi
 }
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Copy files from a source to a target directory, comparing sizes (using rsync or robocopy).
+# Skips files if they exist in the target with the same size.
+#
+# Usage example:
+#
+#   get-folder /path/to/source/ /path/to/target/
 
 get-folder() {
     # Ensure source and target paths end with a forward slash
@@ -414,6 +531,14 @@ get-folder() {
     fi
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Remove all Docker containers, images, and volumes.
+#
+# Usage example:
+#
+#   docker-clean
+
 docker-clean(){
     # Delete all containers
     docker rm -f $(docker ps -a -q)
@@ -423,13 +548,41 @@ docker-clean(){
     docker volume rm $(docker volume ls -q)
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Clone a repository structure without the .git folder using rsync (effectively copying files).
+#
+# Usage example:
+#
+#   git-clone /path/to/source/repo/
+
 git-clone(){
     eval "rsync -av --progress $* ./ --exclude .git --exclude README.md --exclude LICENSE --exclude node_modules --exclude bower_components"
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Pull changes and update git submodules.
+#
+# Usage example:
+#
+#   git-pup
+
 git-pup(){
     git pull && git submodule init && git submodule update && git submodule status
 }
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Scan the local network for active IPs using nmap.
+#
+# Usage examples:
+#
+#   ips                 # Scan 192.168.1.0/24 with sudo
+#   ips 10.0.0.0 16     # Scan 10.0.0.0/16 with sudo
+#   ips ip-only         # Scan default network, show only IPs
+#   ips no-sudo       # Scan default network without sudo
+#   ips 192.168.1.0 24 ip-only no-sudo # Combine options
 
 ips(){
     local usage="ips [%NETWORK_BASE_IP%] [%BIT_DEPTH%] [ip-only | no-sudo]"$'\n'"Default IP: 192.168.1.0"$'\n'"Default Mask: 24"
@@ -478,6 +631,14 @@ ips(){
 
     eval "${prefix}nmap $addr/$mask -n -sP${suffix}"
 }
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Refresh files in a target directory from a source directory, overwriting existing files.
+#
+# Usage example:
+#
+#   refresh-files /path/to/source/ [ /path/to/target/ ] # Target defaults to current directory
 
 refresh-files(){
 
@@ -538,6 +699,14 @@ refresh-files(){
 
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Update npm and bower dependencies using ncu across the project.
+#
+# Usage example:
+#
+#   ncu-update-all
+
 ncu-update-all(){
 
   if ! cmd_exists "ncu"; then
@@ -562,9 +731,26 @@ ncu-update-all(){
   done
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Convert text from selection to speech using festival.
+# (Requires xsel and festival to be installed)
+#
+# Usage example: Select text, then run:
+#
+#   talk
+
 talk(){
     eval "xsel | festival --tts --pipe"
 }
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Compare files in the current directory with another, removing the smaller version of each pair.
+#
+# Usage example:
+#
+#   remove_smaller_files /path/to/other/directory
 
 remove_smaller_files(){
     LEFT_DIR="$PWD"
@@ -604,6 +790,14 @@ remove_smaller_files(){
     done
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Reinstall npm dependencies after removing node_modules and setting Node v18.
+#
+# Usage example:
+#
+#   npmi
+
 npmi() {
     if [ ! -f "$PWD/package.json" ]; then
         echo "Not an NPM package folder."
@@ -632,6 +826,16 @@ npmi() {
         return 1
     fi
 }
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Extract dependency names from a package.json file using jq.
+#
+# Usage examples:
+#
+#   get-dependencies ./package.json          # Get 'dependencies'
+#   get-dependencies ./package.json dev      # Get 'devDependencies'
+#   get-dependencies ../other/package.json peer # Get 'peerDependencies'
 
 get-dependencies() {
     local package_json_path="$1"
@@ -699,6 +903,15 @@ get-dependencies() {
     echo "$dependencies"
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Install dependencies listed in a specified package.json file.
+#
+# Usage examples:
+#
+#   install-dependencies-from ../source/package.json        # Install 'dependencies'
+#   install-dependencies-from ../source/package.json dev    # Install 'devDependencies' as dev dependencies
+
 install-dependencies-from() {
     local package_json_path="$1"
     local dependency_type_prefix="${2:-dependencies}"
@@ -743,6 +956,16 @@ install-dependencies-from() {
     done
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# A wrapper around `rm` to prevent accidental removal of root or top-level directories.
+# Forbids removing '/', '/some_dir', '/*', or using '--no-preserve-root'.
+#
+# Usage example:
+#
+#   rm_safe file.txt directory/
+#   rm_safe -rf old_files/
+
 rm_safe() {
     # Iterate over the arguments
     for arg in "$@"; do
@@ -776,6 +999,14 @@ rm_safe() {
     # Run the actual rm command with the original arguments
     command rm "$@"
 }
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Add all changes, commit with a message, and push to the current branch.
+#
+# Usage example:
+#
+#   git-push "Fix bug #123"
 
 git-push() {
     local usage="git-push \"commit message\""
@@ -817,10 +1048,61 @@ git-push() {
     git push origin "$current_branch"
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Curl a URL, expecting JSON, and pretty-print the output using jq.
+#
+# Usage example:
+#
+#   ccurl https://api.example.com/data
+
 ccurl() {
   if [ -z "$1" ]; then
     echo "Usage: ccurl <URL>"
     return 1
   fi
   curl -s -H "Accept: application/json" "$1" | jq
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Clone all repositories from a GitHub organization into a specified directory.
+#
+# Usage example:
+#
+#   fetch-github-repos my-org ./cloned-repos
+
+fetch-github-repos() {
+  local org="$1"
+  local dest_dir="$2"
+
+  if [[ -z "$org" || -z "$dest_dir" ]]; then
+    echo "Usage: fetch-github-repos <organization> <destination-folder>"
+    return 1
+  fi
+
+  if ! command -v jq >/dev/null 2>&1; then
+    echo "Error: 'jq' is required but not installed. Install it with 'brew install jq' or 'sudo apt install jq'."
+    return 1
+  fi
+
+  # Create destination directory if it doesn't exist
+  mkdir -p "$dest_dir"
+
+  # Fetch repositories
+  echo "Fetching repositories for organization '$org'..."
+  local repos=$(curl -s "https://api.github.com/orgs/$org/repos?per_page=100" | jq -r '.[].ssh_url')
+
+  if [[ -z "$repos" ]]; then
+    echo "No repositories found or failed to fetch from GitHub."
+    return 1
+  fi
+
+  # Clone each repo
+  for repo in $repos; do
+    echo "Cloning $repo into $dest_dir..."
+    git clone "$repo" "$dest_dir/$(basename -s .git "$repo")"
+  done
+
+  echo "All repositories have been cloned."
 }
