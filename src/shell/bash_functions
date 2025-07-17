@@ -1209,7 +1209,9 @@ OPTIONS:
 EXAMPLES:
     nginx-init -d example.com -h http://127.0.0.1:3000 -f example.conf
     nginx-init -d example.com -d www.example.com -h http://127.0.0.1:3000 -f example.conf
-    nginx-init --api -d api.example.com -h http://127.0.0.1:8080 -f api.conf --link"
+    nginx-init --api -d api.example.com -h http://127.0.0.1:8080 -f api.conf --link
+
+NOTE: This function will prompt for sudo authentication when writing to /etc/nginx/"
 
     local use_api=false
     local domains=()
@@ -1220,6 +1222,13 @@ EXAMPLES:
     local template_file
     local sites_available="/etc/nginx/sites-available"
     local sites_enabled="/etc/nginx/sites-enabled"
+
+    # Prompt for sudo authentication early to avoid issues later
+    echo "This function requires sudo access to write to /etc/nginx/"
+    if ! sudo -v; then
+        echo "Error: sudo authentication failed"
+        return 1
+    fi
 
         # Get the directory where this script is actually located (following symlinks)
     local source_file="${BASH_SOURCE[0]}"
@@ -1338,10 +1347,10 @@ EXAMPLES:
     echo "Host: $host"
     echo "Output: $output_file"
 
-    # Perform token replacement and write to output file
+    # Perform token replacement and write to output file using sudo
     sed -e "s|%DOMAINS%|$domain_string|g" \
         -e "s|%HOST_URL%|$host|g" \
-        "$template_file" > "$output_file"
+        "$template_file" | sudo tee "$output_file" > /dev/null
 
     if [[ $? -eq 0 ]]; then
         echo "✓ Configuration file created successfully"
@@ -1361,12 +1370,12 @@ EXAMPLES:
 
         # Remove existing link if it exists
         if [[ -L "$link_path" ]]; then
-            rm "$link_path"
+            sudo rm "$link_path"
             echo "Removed existing symbolic link"
         fi
 
         # Create new symbolic link
-        ln -s "$output_file" "$link_path"
+        sudo ln -s "$output_file" "$link_path"
         if [[ $? -eq 0 ]]; then
             echo "✓ Symbolic link created: $link_path"
         else
