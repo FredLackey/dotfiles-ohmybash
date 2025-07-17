@@ -1223,11 +1223,19 @@ NOTE: This function will prompt for sudo authentication when writing to /etc/ngi
     local sites_available="/etc/nginx/sites-available"
     local sites_enabled="/etc/nginx/sites-enabled"
 
-    # Prompt for sudo authentication early to avoid issues later
+    # Check if we have sudo access
     echo "This function requires sudo access to write to /etc/nginx/"
-    if ! sudo -v; then
-        echo "Error: sudo authentication failed"
-        return 1
+
+    # Try passwordless sudo first
+    if sudo -n true 2>/dev/null; then
+        echo "Using passwordless sudo"
+    else
+        # Fall back to regular sudo (will prompt for password if needed)
+        echo "Authenticating with sudo..."
+        if ! sudo -v; then
+            echo "Error: sudo authentication failed"
+            return 1
+        fi
     fi
 
         # Get the directory where this script is actually located (following symlinks)
