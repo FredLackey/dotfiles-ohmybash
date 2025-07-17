@@ -1186,3 +1186,196 @@ EOF
 
     rm -rf "$workdir"
 }
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Initialize nginx configuration from template files.
+#
+# Usage examples:
+#
+#   nginx-init -d example.com -h http://127.0.0.1:3000 -f example.conf
+#   nginx-init --api -d api.example.com -h http://127.0.0.1:8080 -f api.conf --link
+
+nginx-init() {
+    local usage="nginx-init [OPTIONS]
+
+OPTIONS:
+    -a, --api       Use nginx-docker-host-api.conf template instead of nginx-docker-host.conf
+    -d, --domain    Domain name for server_name directive (can be used multiple times) (required)
+    -h, --host      Upstream URL for proxy_pass directive (required)
+    -f, --file      Output filename in /etc/nginx/sites-available (must end with .conf) (required)
+    -l, --link      Create symbolic link in /etc/nginx/sites-enabled
+
+EXAMPLES:
+    nginx-init -d example.com -h http://127.0.0.1:3000 -f example.conf
+    nginx-init -d example.com -d www.example.com -h http://127.0.0.1:3000 -f example.conf
+    nginx-init --api -d api.example.com -h http://127.0.0.1:8080 -f api.conf --link"
+
+    local use_api=false
+    local domains=()
+    local host=""
+    local filename=""
+    local create_link=false
+    local script_dir
+    local template_file
+    local sites_available="/etc/nginx/sites-available"
+    local sites_enabled="/etc/nginx/sites-enabled"
+
+        # Get the directory where this script is actually located (following symlinks)
+    local source_file="${BASH_SOURCE[0]}"
+    while [[ -L "$source_file" ]]; do
+        local link_target="$(readlink "$source_file")"
+        if [[ "$link_target" == /* ]]; then
+            source_file="$link_target"
+        else
+            source_file="$(cd "$(dirname "$source_file")" && pwd)/$link_target"
+        fi
+    done
+    script_dir="$(cd "$(dirname "$source_file")" && pwd)"
+
+    # Parse command line arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -a|--api)
+                use_api=true
+                shift
+                ;;
+            -d|--domain)
+                domains+=("$2")
+                shift 2
+                ;;
+            -h|--host)
+                host="$2"
+                shift 2
+                ;;
+            -f|--file)
+                filename="$2"
+                shift 2
+                ;;
+            -l|--link)
+                create_link=true
+                shift
+                ;;
+            --help)
+                echo "$usage"
+                return 0
+                ;;
+            *)
+                echo "Unknown option: $1"
+                echo "$usage"
+                return 1
+                ;;
+        esac
+    done
+
+    # Show usage if no arguments provided
+    if [[ $# -eq 0 && ${#domains[@]} -eq 0 && -z "$host" && -z "$filename" ]]; then
+        echo "$usage"
+        return 0
+    fi
+
+    # Validate required arguments
+    if [[ ${#domains[@]} -eq 0 ]]; then
+        echo "Error: At least one domain is required (-d or --domain)"
+        echo "$usage"
+        return 1
+    fi
+
+    if [[ -z "$host" ]]; then
+        echo "Error: Host URL is required (-h or --host)"
+        echo "$usage"
+        return 1
+    fi
+
+    if [[ -z "$filename" ]]; then
+        echo "Error: Filename is required (-f or --file)"
+        echo "$usage"
+        return 1
+    fi
+
+    # Validate filename ends with .conf
+    if [[ ! "$filename" =~ \.conf$ ]]; then
+        echo "Error: Filename must end with .conf"
+        return 1
+    fi
+
+    # Select template file
+    if [[ "$use_api" == true ]]; then
+        template_file="$script_dir/../../templates/nginx-docker-host-api.conf"
+    else
+        template_file="$script_dir/../../templates/nginx-docker-host.conf"
+    fi
+
+    # Check if template file exists
+    if [[ ! -f "$template_file" ]]; then
+        echo "Error: Template file not found: $template_file"
+        return 1
+    fi
+
+    # Check if sites-available directory exists
+    if [[ ! -d "$sites_available" ]]; then
+        echo "Error: Directory $sites_available does not exist"
+        return 1
+    fi
+
+    # Create output file path
+    local output_file="$sites_available/$filename"
+
+    # Check if output file already exists
+    if [[ -f "$output_file" ]]; then
+        echo "Warning: File $output_file already exists and will be overwritten"
+    fi
+
+    # Join domains into a single string for server_name directive
+    local domain_string
+    domain_string=$(printf "%s " "${domains[@]}")
+    domain_string="${domain_string% }"  # Remove trailing space
+
+    # Copy template and replace tokens
+    echo "Creating nginx configuration..."
+    echo "Template: $(basename "$template_file")"
+    echo "Domains: $domain_string"
+    echo "Host: $host"
+    echo "Output: $output_file"
+
+    # Perform token replacement and write to output file
+    sed -e "s|%DOMAINS%|$domain_string|g" \
+        -e "s|%HOST_URL%|$host|g" \
+        "$template_file" > "$output_file"
+
+    if [[ $? -eq 0 ]]; then
+        echo "✓ Configuration file created successfully"
+    else
+        echo "✗ Failed to create configuration file"
+        return 1
+    fi
+
+    # Create symbolic link if requested
+    if [[ "$create_link" == true ]]; then
+        if [[ ! -d "$sites_enabled" ]]; then
+            echo "Error: Directory $sites_enabled does not exist"
+            return 1
+        fi
+
+        local link_path="$sites_enabled/$filename"
+
+        # Remove existing link if it exists
+        if [[ -L "$link_path" ]]; then
+            rm "$link_path"
+            echo "Removed existing symbolic link"
+        fi
+
+        # Create new symbolic link
+        ln -s "$output_file" "$link_path"
+        if [[ $? -eq 0 ]]; then
+            echo "✓ Symbolic link created: $link_path"
+        else
+            echo "✗ Failed to create symbolic link"
+            return 1
+        fi
+    fi
+
+    echo "Done!"
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
