@@ -1567,3 +1567,55 @@ NOTE: This function will install certbot if not present and requires sudo access
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Add certbot renewal cron job if it doesn't already exist.
+#
+# Usage example:
+#
+#   certbot-crontab-init
+
+certbot-crontab-init() {
+    local cron_line="0 12 * * * /usr/bin/certbot renew --quiet"
+    local temp_crontab
+
+    echo "Checking for existing certbot renewal cron job..."
+
+    # Get current crontab (redirect stderr to handle case where no crontab exists)
+    temp_crontab=$(crontab -l 2>/dev/null)
+    local crontab_exists=$?
+
+    # Check if the certbot renewal line already exists
+    if [[ $crontab_exists -eq 0 ]] && echo "$temp_crontab" | grep -Fq "/usr/bin/certbot renew --quiet"; then
+        echo "✓ Certbot renewal cron job already exists"
+        echo "Current crontab entries containing 'certbot':"
+        echo "$temp_crontab" | grep certbot
+        return 0
+    fi
+
+    echo "Adding certbot renewal cron job..."
+
+    # Create new crontab content
+    if [[ $crontab_exists -eq 0 && -n "$temp_crontab" ]]; then
+        # Existing crontab - append to it
+        {
+            echo "$temp_crontab"
+            echo "$cron_line"
+        } | crontab -
+    else
+        # No existing crontab - create new one
+        echo "$cron_line" | crontab -
+    fi
+
+    if [[ $? -eq 0 ]]; then
+        echo "✓ Certbot renewal cron job added successfully!"
+        echo "Added: $cron_line"
+        echo ""
+        echo "This will automatically renew SSL certificates daily at 12:00 PM."
+        echo "You can view your current crontab with: crontab -l"
+    else
+        echo "✗ Failed to add certbot renewal cron job"
+        return 1
+    fi
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
