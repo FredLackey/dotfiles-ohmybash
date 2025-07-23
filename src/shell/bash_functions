@@ -1577,6 +1577,46 @@ NOTE: This function will install certbot if not present and requires sudo access
 certbot-crontab-init() {
     local cron_line="0 12 * * * /usr/bin/certbot renew --quiet"
     local temp_crontab
+    local cron_service=""
+
+    # Determine cron service name based on OS
+    if [[ -f /etc/debian_version ]]; then
+        cron_service="cron"
+    elif [[ -f /etc/redhat-release ]]; then
+        cron_service="crond"
+    else
+        echo "Warning: Unable to detect OS type, assuming 'cron' service name"
+        cron_service="cron"
+    fi
+
+    # Check if cron service is running
+    echo "Checking cron service status..."
+    if ! systemctl is-active --quiet "$cron_service"; then
+        echo "⚠ Cron service ($cron_service) is not running"
+        echo "Attempting to start and enable cron service..."
+
+        # Try passwordless sudo first
+        if sudo -n true 2>/dev/null; then
+            echo "Using passwordless sudo"
+        else
+            echo "This requires sudo access to manage the cron service"
+            if ! sudo -v; then
+                echo "Error: sudo authentication failed"
+                return 1
+            fi
+        fi
+
+        # Start and enable the cron service
+        if sudo systemctl start "$cron_service" && sudo systemctl enable "$cron_service"; then
+            echo "✓ Cron service started and enabled successfully"
+        else
+            echo "✗ Failed to start cron service"
+            echo "Please start the cron service manually: sudo systemctl start $cron_service"
+            return 1
+        fi
+    else
+        echo "✓ Cron service ($cron_service) is running"
+    fi
 
     echo "Checking for existing certbot renewal cron job..."
 
