@@ -540,12 +540,44 @@ get-folder() {
 #   docker-clean
 
 docker-clean(){
+    echo "This will remove ALL Docker containers, images, and volumes."
+    echo "This action cannot be undone!"
+    echo ""
+    read -p "Are you sure you want to continue? (y/N): " -n 1 -r
+    echo ""
+
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Operation cancelled."
+        return 0
+    fi
+
+    echo "Proceeding with Docker cleanup..."
+
     # Delete all containers
-    docker rm -f $(docker ps -a -q)
+    if docker ps -a -q >/dev/null 2>&1; then
+        echo "Removing all containers..."
+        docker rm -f $(docker ps -a -q)
+    else
+        echo "No containers to remove."
+    fi
+
     # Delete all images
-    docker images -q | xargs docker rmi -f
+    if docker images -q >/dev/null 2>&1; then
+        echo "Removing all images..."
+        docker images -q | xargs docker rmi -f
+    else
+        echo "No images to remove."
+    fi
+
     # Delete volumes
-    docker volume rm $(docker volume ls -q)
+    if docker volume ls -q >/dev/null 2>&1; then
+        echo "Removing all volumes..."
+        docker volume rm $(docker volume ls -q)
+    else
+        echo "No volumes to remove."
+    fi
+
+    echo "Docker cleanup completed."
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
