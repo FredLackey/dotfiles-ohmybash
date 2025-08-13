@@ -326,7 +326,7 @@ set-git-public(){
 
 backup-source(){
     backupdir="$*$(date +"%Y%m%d%H%M%S")/"
-    backupcmd="rsync -arv --progress --no-links --exclude={.Trash,.android,.atom,.bash_sessions,.cache,.cups,.dropbox,.git,.next,.npm,.nvm,.viminfo,bower_components,node_modules,.tmp,.idea,.DS_Store} ~/Source $backupdir"
+    backupcmd="rsync -arv --progress --no-links --exclude={.Trash,.android,.atom,.bash_sessions,.cache,.cups,.dropbox,.git,.next,.npm,.nvm,.viminfo,bower_components,node_modules,.tmp,.idea,.DS_Store,.terraform} ~/Source $backupdir"
     mkdir -p "$backupdir"
     eval "$backupcmd"
     cd "$backupdir"
@@ -342,7 +342,7 @@ backup-source(){
 
 backup-all(){
 
-    excludes=".android,.atom,.bash_sessions,bower_components,.cache,.cups,.dropbox,.DS_Store,.git,_gsdata_,.idea,node_modules,.next,.npm,.nvm,\$RECYCLE.BIN,System\ Volume\ Information,.TemporaryItems,.Trash,.Trashes,.tmp,.viminfo"
+    excludes=".terraform,.android,.atom,.bash_sessions,bower_components,.cache,.cups,.dropbox,.DS_Store,.git,_gsdata_,.idea,node_modules,.next,.npm,.nvm,\$RECYCLE.BIN,System\ Volume\ Information,.TemporaryItems,.Trash,.Trashes,.tmp,.viminfo"
 
     backupdir="$*"
     backupcmd="rsync -arv --progress --no-links --exclude={$excludes} ~/Downloads $backupdir"
