@@ -5,20 +5,20 @@
 
 main() {
     echo "Installing Homebrew packages..."
-    
+
     # Bash and shell tools
     # brew install bash
     # brew install bash-completion@2
     # brew install shellcheck
-    
+
     # Git
     brew install git
-    
+
     # Browsers
     brew install --cask google-chrome
     # brew install --cask google-chrome@canary
     # brew install --cask safari-technology-preview
-    
+
     # Development tools
     brew install vim
     brew install tmux
@@ -30,29 +30,29 @@ main() {
     brew install tfenv
     brew install yt-dlp
     brew install neovim
-    
+
     # GPG
     brew install gpg
     # brew install pinentry-mac
-    
+
     # Image tools
     # brew install --cask imageoptim
     # brew install --cask pngyu
-    
+
     # Video tools
     # brew install atomicparsley
     # brew install ffmpeg
-    
+
     # Web font tools
     # brew install sfnt2woff-zopfli --tap bramstein/webfonttools
     # brew install sfnt2woff --tap bramstein/webfonttools
     # brew install woff2 --tap bramstein/webfonttools
-    
+
     # Miscellaneous utilities
     brew install --cask vlc
     brew install jq
     brew install yq
-    
+
     # Applications
     brew install --cask adobe-creative-cloud
     brew install --cask appcleaner
@@ -67,6 +67,8 @@ main() {
     brew install --cask docker
     brew install --cask drawio
     brew install --cask elmedia-player
+    brew install --cask google-chrome
+    brew install --cask google-chrome@canary
     # brew install --cask keyboard-maestro
     # brew install --cask messenger
     brew install --cask microsoft-office
@@ -86,7 +88,7 @@ main() {
     brew install --cask visual-studio-code
     brew install --cask whatsapp
     brew install --cask zoom
-    
+
     # LazyGit
     brew install lazygit
 
@@ -97,7 +99,7 @@ main() {
     if [ -d "$HOME/.nvm" ]; then
         brew install yarn
     fi
-    
+
     echo "Homebrew packages installation completed!"
 }
 
