@@ -9,27 +9,6 @@ print_in_purple "\n   Privacy\n\n"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Disable crash reporter
-execute \
-    "sudo systemctl disable apport" \
-    "Disable crash reporter"
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# Disable telemetry
-execute \
-    "sudo systemctl disable whoopsie" \
-    "Disable telemetry"
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# Disable location services
-execute \
-    "sudo systemctl disable geoclue" \
-    "Disable location services"
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 # Disable Bluetooth if not needed (for headless server)
 execute \
     "sudo systemctl disable bluetooth" \
@@ -37,7 +16,21 @@ execute \
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Disable WiFi power management
+# Disable WiFi power management for better connectivity
 execute \
     "echo 'options 8192cu rtw_power_mgnt=0 rtw_enusbss=0' | sudo tee /etc/modprobe.d/8192cu.conf" \
     "Disable WiFi power management"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Disable unnecessary services for headless server
+execute \
+    "sudo systemctl disable avahi-daemon" \
+    "Disable Avahi service"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Disable desktop environment services if running headless
+execute \
+    "sudo systemctl disable lightdm" \
+    "Disable desktop manager"

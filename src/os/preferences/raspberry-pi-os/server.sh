@@ -27,32 +27,6 @@ execute \
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Configure firewall
-execute \
-    "sudo ufw --force enable" \
-    "Enable UFW firewall"
-
-execute \
-    "sudo ufw allow ssh" \
-    "Allow SSH through firewall"
-
-execute \
-    "sudo ufw allow 80/tcp" \
-    "Allow HTTP through firewall"
-
-execute \
-    "sudo ufw allow 443/tcp" \
-    "Allow HTTPS through firewall"
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# Configure fail2ban
-execute \
-    "sudo systemctl enable fail2ban" \
-    "Enable fail2ban service"
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 # Set timezone
 execute \
     "sudo timedatectl set-timezone UTC" \
@@ -73,9 +47,35 @@ execute \
     "Disable Bluetooth service"
 
 execute \
-    "sudo systemctl disable cups" \
-    "Disable CUPS printing service"
-
-execute \
     "sudo systemctl disable avahi-daemon" \
     "Disable Avahi service"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Configure Raspberry Pi specific settings
+execute \
+    "sudo raspi-config nonint do_ssh 0" \
+    "Enable SSH via raspi-config"
+
+execute \
+    "sudo raspi-config nonint do_boot_behaviour B1" \
+    "Set boot to console (no desktop)"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Configure swap for better performance
+execute \
+    "sudo dphys-swapfile swapoff" \
+    "Disable swap temporarily"
+
+execute \
+    "echo 'CONF_SWAPSIZE=1024' | sudo tee /etc/dphys-swapfile" \
+    "Set swap size to 1GB"
+
+execute \
+    "sudo dphys-swapfile setup" \
+    "Setup new swap configuration"
+
+execute \
+    "sudo dphys-swapfile swapon" \
+    "Enable new swap configuration"

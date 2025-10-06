@@ -9,13 +9,6 @@ print_in_purple "\n   Terminal\n\n"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Set default terminal
-execute \
-    "sudo update-alternatives --set x-terminal-emulator /usr/bin/lxterminal" \
-    "Set default terminal"
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 # Configure terminal colors for better visibility
 execute \
     "echo 'export TERM=xterm-256color' | sudo tee -a /etc/environment" \
@@ -34,3 +27,14 @@ execute \
 execute \
     "echo 'set -g default-terminal \"screen-256color\"' | sudo tee -a /etc/tmux.conf" \
     "Set tmux terminal type"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Configure bash history
+execute \
+    "echo 'HISTSIZE=10000' | sudo tee -a /etc/environment" \
+    "Set bash history size"
+
+execute \
+    "echo 'HISTFILESIZE=10000' | sudo tee -a /etc/environment" \
+    "Set bash history file size"
