@@ -16,14 +16,14 @@ install_package "G++" "g++"
 
 # Install network and server tools
 install_package "Net-tools" "net-tools"
-install_package "SSH Server" "openssh-server"
-install_package "UFW Firewall" "ufw"
-install_package "Fail2Ban" "fail2ban"
+# install_package "SSH Server" "openssh-server"
+# install_package "UFW Firewall" "ufw"
+# install_package "Fail2Ban" "fail2ban"
 
 # Install web server tools
-install_package "Nginx" "nginx"
-install_package "Apache2" "apache2"
-install_package "Certbot" "certbot"
+# install_package "Nginx" "nginx"
+# install_package "Apache2" "apache2"
+# install_package "Certbot" "certbot"
 
 # Install database tools
 install_package "MySQL Client" "mysql-client"
