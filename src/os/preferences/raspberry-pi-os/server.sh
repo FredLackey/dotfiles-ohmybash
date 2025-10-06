@@ -61,21 +61,3 @@ execute \
     "sudo raspi-config nonint do_boot_behaviour B1" \
     "Set boot to console (no desktop)"
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# Configure swap for better performance
-execute \
-    "sudo dphys-swapfile swapoff" \
-    "Disable swap temporarily"
-
-execute \
-    "echo 'CONF_SWAPSIZE=1024' | sudo tee /etc/dphys-swapfile" \
-    "Set swap size to 1GB"
-
-execute \
-    "sudo dphys-swapfile setup" \
-    "Setup new swap configuration"
-
-execute \
-    "sudo dphys-swapfile swapon" \
-    "Enable new swap configuration"

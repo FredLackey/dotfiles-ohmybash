@@ -26,5 +26,4 @@ install_package "Net-tools" "net-tools"
 # install_package "Certbot" "certbot"
 
 # Install database tools
-install_package "MySQL Client" "mysql-client"
 install_package "PostgreSQL Client" "postgresql-client"

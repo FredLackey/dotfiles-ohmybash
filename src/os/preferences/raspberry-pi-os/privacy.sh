@@ -27,10 +27,3 @@ execute \
 execute \
     "sudo systemctl disable avahi-daemon" \
     "Disable Avahi service"
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# Disable desktop environment services if running headless
-execute \
-    "sudo systemctl disable lightdm" \
-    "Disable desktop manager"

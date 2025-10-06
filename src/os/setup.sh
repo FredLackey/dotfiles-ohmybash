@@ -281,16 +281,22 @@ main() {
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if cmd_exists "git"; then
+    # Only initialize Git repository for workstation environments
+    local os_name="$(get_os_name)"
+    if [[ "$os_name" == *"-wks" ]] || [[ "$os_name" == "macos" ]]; then
 
-        if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
-            ./initialize_git_repository.sh "$DOTFILES_ORIGIN"
-        fi
+        if cmd_exists "git"; then
 
-        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            if [ "$(git config --get remote.origin.url)" != "$DOTFILES_ORIGIN" ]; then
+                ./initialize_git_repository.sh "$DOTFILES_ORIGIN"
+            fi
 
-        if ! $skipQuestions; then
-            ./update_content.sh
+            # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+            if ! $skipQuestions; then
+                ./update_content.sh
+            fi
+
         fi
 
     fi

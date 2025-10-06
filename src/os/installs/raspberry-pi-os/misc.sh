@@ -27,4 +27,3 @@ install_package "Nload" "nload"
 
 # Install Raspberry Pi specific tools
 install_package "Raspberry Pi Config" "raspi-config"
-install_package "Raspberry Pi Firmware" "raspberrypi-kernel"
