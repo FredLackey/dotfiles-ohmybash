@@ -161,6 +161,7 @@ verify_os() {
 
     declare -r MINIMUM_MACOS_VERSION="10.10"
     declare -r MINIMUM_UBUNTU_VERSION="20.04"
+    declare -r MINIMUM_RASPBERRY_PI_VERSION="10"
 
     local os_name="$(get_os)"
     local os_version="$(get_os_version)"
@@ -193,8 +194,21 @@ verify_os() {
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    # Check if the OS is `Raspberry Pi OS` (raspbian)
+    # and it's above the required version.
+
+    elif [ "$os_name" == "raspbian" ]; then
+
+        if is_supported_version "$os_version" "$MINIMUM_RASPBERRY_PI_VERSION"; then
+            return 0
+        else
+            printf "Sorry, this script is intended only for Raspberry Pi OS %s+" "$MINIMUM_RASPBERRY_PI_VERSION"
+        fi
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
     else
-        printf "Sorry, this script is intended only for macOS and Ubuntu!"
+        printf "Sorry, this script is intended only for macOS, Ubuntu, and Raspberry Pi OS!"
     fi
 
     return 1

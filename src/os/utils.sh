@@ -154,18 +154,24 @@ get_os_name() {
     if [ "$os" == "macos" ]; then
         version="macos"
     elif [ -e "/etc/os-release" ]; then
-        if [ -z "/mnt/c" ]; then
-          envflag="-wsl"
-        elif [ -z "$XDG_CURRENT_DESKTOP" ]; then
-          envflag="-svr"
-        else
-          envflag="-wks"
-        fi
         id="$(. /etc/os-release; printf "%s" "$ID")"
-        version_id="$(. /etc/os-release; printf "%s" "$VERSION_ID")"
-        parts=(`echo $version_id | tr '.' ' '`)
-        int=${parts[0]}
-        version="$id""-""$int""$envflag"
+
+        # Check if it's Raspberry Pi OS (raspbian)
+        if [ "$id" == "raspbian" ]; then
+            version="raspberry-pi-os"
+        else
+            if [ -z "/mnt/c" ]; then
+              envflag="-wsl"
+            elif [ -z "$XDG_CURRENT_DESKTOP" ]; then
+              envflag="-svr"
+            else
+              envflag="-wks"
+            fi
+            version_id="$(. /etc/os-release; printf "%s" "$VERSION_ID")"
+            parts=(`echo $version_id | tr '.' ' '`)
+            int=${parts[0]}
+            version="$id""-""$int""$envflag"
+        fi
 
     fi
 

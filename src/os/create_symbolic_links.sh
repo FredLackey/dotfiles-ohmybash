@@ -17,18 +17,26 @@ backup_bash_files() {
 
 create_symlinks() {
 
+    local os_name="$(get_os_name)"
+    local shell_path="shell"
+
+    # Use OS-specific shell files if they exist
+    if [ -d "../shell/$os_name" ]; then
+        shell_path="shell/$os_name"
+    fi
+
     declare -a FILES_TO_SYMLINK=(
 
-        "shell/bash_aliases"
-        "shell/bash_autocompletion"
-        "shell/bash_exports"
-        "shell/bash_functions"
-        "shell/bash_init"
-        "shell/bash_logout"
-        "shell/bash_options"
-        "shell/bash_profile"
-        "shell/bash_prompt"
-        "shell/bashrc"
+        "$shell_path/bash_aliases"
+        "$shell_path/bash_autocompletion"
+        "$shell_path/bash_exports"
+        "$shell_path/bash_functions"
+        "$shell_path/bash_init"
+        "$shell_path/bash_logout"
+        "$shell_path/bash_options"
+        "$shell_path/bash_profile"
+        "$shell_path/bash_prompt"
+        "$shell_path/bashrc"
         "shell/curlrc"
         "shell/inputrc"
 
