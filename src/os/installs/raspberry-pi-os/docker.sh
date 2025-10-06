@@ -13,7 +13,7 @@ print_in_purple "\n   Docker\n\n"
 # Check if Docker is already installed
 if package_is_installed "docker-ce"; then
     print_success "Docker is already installed"
-    return 0
+    exit 0
 fi
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
