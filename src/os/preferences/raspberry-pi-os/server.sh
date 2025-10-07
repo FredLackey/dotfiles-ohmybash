@@ -16,17 +16,6 @@ execute \
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Configure SSH for better security
-execute \
-    "sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config" \
-    "Disable password authentication for SSH"
-
-execute \
-    "sudo sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config" \
-    "Enable public key authentication for SSH"
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 # Set timezone
 execute \
     "sudo timedatectl set-timezone UTC" \
