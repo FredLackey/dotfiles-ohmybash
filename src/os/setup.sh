@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# Dotfiles Setup Script
+#
+# Sets up development environment with dotfiles, installs required software,
+# and configures system preferences.
+#
+# Usage:
+#   ./setup.sh          Interactive mode (asks for confirmation)
+#   ./setup.sh -y       Non-interactive mode (auto-confirm all prompts)
+#   ./setup.sh --yes    Same as -y
+#
+# For CI/CD pipelines, use: ./setup-cicd.sh
+
 declare -r GITHUB_REPOSITORY="fredlackey/dotfiles"
 
 declare -r DOTFILES_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
