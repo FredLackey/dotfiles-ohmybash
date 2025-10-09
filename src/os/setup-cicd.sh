@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # CI/CD Setup Script
-# 
+#
 # This script downloads and runs setup.sh with the -y flag (non-interactive mode).
 # Suitable for automated deployments, containers, and CI/CD pipelines.
 #

@@ -2,6 +2,23 @@
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+# Display Docker containers in a formatted table.
+#
+# Usage example:
+#
+#   dp
+
+dp() {
+    if ! command -v docker &> /dev/null; then
+        echo "Docker is not currently installed."
+        return 1
+    fi
+
+    docker ps --format '{{.ID}}\t{{.Names}}\t{{.Ports}}'
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 # Clone a repository and install its dependencies.
 #
 # Usage example:
