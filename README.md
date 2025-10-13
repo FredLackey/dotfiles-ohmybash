@@ -1,214 +1,282 @@
-[Fred][repo]’s dotfiles
-==========================
+# Dotfiles - Oh My Bash Edition
 
-[![CI status for macOS][ci badge macos]][ci link macos]
-[![CI status for Ubuntu][ci badge ubuntu]][ci link ubuntu]
+A complete rebuild of my dotfiles repository using [Oh My Bash](https://ohmybash.nntoan.com/) as the foundation, with OS-specific configurations for macOS, Ubuntu, and Raspberry Pi OS.
 
-These are the base dotfiles that I start with when I set up
-a new environment (for more specific local needs I use the
-[`*.local`](#local-settings) files).
+## Project Status
 
-Table of Contents
------------------
+**ACTIVE REBUILD IN PROGRESS**
 
-- [Fred’s dotfiles](#freds-dotfiles)
-  - [Table of Contents](#table-of-contents)
-  - [Setup](#setup)
-  - [Screenshots](#screenshots)
-    - [Git](#git)
-    - [tmux \& Vim](#tmux--vim)
-  - [Customize](#customize)
-    - [Local Settings](#local-settings)
-      - [`~/.bash.local`](#bashlocal)
-      - [`~/.gitconfig.local`](#gitconfiglocal)
-      - [`~/.vimrc.local`](#vimrclocal)
-    - [Forks](#forks)
-  - [Update](#update)
-  - [License](#license)
+This repository is a ground-up rewrite of my dotfiles system. The previous implementation (_legacy folder) had accumulated significant technical debt through years of forking, customization drift, and custom implementations of features that now have better industry-standard solutions.
 
-Setup
------
+### Why a Complete Rebuild?
 
-To set up the dotfiles run the appropriate snippet in the terminal:
+**The Problem:**
+- Original repo was forked from another developer's opinionated configurations
+- Years of modifications created a tangled web of custom scripts
+- Custom implementations for prompts, autocomplete, Git integration, etc. were hard to maintain
+- Attempting to refactor the existing codebase would result in an unmaintainable hybrid system
 
-(⚠️  __DO NOT__ run the `setup` script if you do not fully understand
-[what it does][setup]. Seriously, __DON'T__!)
+**The Solution:**
+- Fresh start using **Oh My Bash** as the core framework
+- Leverage community-maintained plugins and themes instead of custom implementations
+- Use industry-standard installers (Homebrew, apt, etc.) instead of custom installation scripts
+- Clean, modular structure organized by OS with clear separation of concerns
 
-| OS | Snippet |
-|:---|:---|
-| macOS | `bash -c "$(curl -LsS https://raw.github.com/fredlackey/dotfiles/main/src/os/setup.sh)"` |
-| Ubuntu | `bash -c "$(wget -qO - https://raw.github.com/fredlackey/dotfiles/main/src/os/setup.sh)"` |
+## What's Different
 
-That's it! ✨
+### Before (Legacy System)
+- Custom Bash prompt configuration with manual color codes and Git parsing
+- Hand-written autocomplete scripts for various tools
+- Scattered aliases across multiple files
+- Custom Git integration functions
+- OS-specific configurations mixed with shared code
+- Manual update mechanisms
+- Difficult to test and maintain
+
+### After (Oh My Bash System)
+- **Oh My Bash themes** for prompt customization (70+ options)
+- **Community-maintained plugins** for tool integration (24+ plugins)
+- **Organized alias categories** following Oh My Bash conventions
+- **Built-in Git integration** through themes and plugins
+- **Clear OS separation** with shared Oh My Bash foundation
+- **Automatic updates** via Oh My Bash's update system
+- **Modular design** - enable/disable features easily
+
+## Repository Structure
+
+```
+dotfiles-ohmybash/
+├── README.md                 # This file
+├── _legacy/                  # Original dotfiles (preserved for reference)
+│   ├── src/
+│   │   ├── git/
+│   │   ├── shell/
+│   │   ├── vim/
+│   │   ├── os/
+│   │   │   ├── installs/
+│   │   │   └── preferences/
+│   │   └── ...
+│   └── README.md
+├── _archive/                 # Experimental sandbox approach (not used)
+├── ai-docs/                  # Documentation and notes
+│   ├── ABOUT_OHMYBASH.md    # Oh My Bash capabilities and features
+│   ├── ALIASES.md           # Legacy aliases documentation
+│   ├── ALIASES_NEW.md       # New aliases approach
+│   └── BASH_FILE_OVERLAP.md # File mapping documentation
+└── (future structure)
+    ├── install/              # OS-specific installation scripts
+    │   ├── macos/
+    │   ├── ubuntu-24-wks/
+    │   ├── ubuntu-24-svr/
+    │   └── raspberry-pi-os/
+    ├── config/               # Configuration files
+    │   ├── oh-my-bash/      # Oh My Bash customizations
+    │   ├── git/
+    │   └── vim/
+    └── setup.sh             # Main setup script
+```
+
+## Philosophy
+
+### 1. Industry Standards First
+Use well-maintained, community-driven tools rather than reinventing the wheel:
+- **Oh My Bash** for shell framework
+- **Homebrew** (macOS) and **apt** (Ubuntu) for package management
+- **nvm** for Node.js version management
+- Standard installers for language runtimes and tools
+
+### 2. OS-Specific When Necessary
+Maintain separate configurations for different operating systems while maximizing code reuse:
+- macOS-specific preferences and installations
+- Ubuntu Server (headless) configurations
+- Ubuntu Workstation (desktop) configurations
+- Raspberry Pi OS optimizations
+
+### 3. Modularity and Clarity
+- Enable/disable features through simple configuration
+- Clear separation between framework (Oh My Bash) and custom code
+- Well-documented customizations in Oh My Bash's `custom/` directory
+- No "magic" - explicit is better than implicit
+
+### 4. Maintainability
+- Reduce custom code surface area
+- Leverage community maintenance for common functionality
+- Keep custom code simple and well-documented
+- Regular updates through Oh My Bash's built-in mechanism
+
+## Oh My Bash Integration
+
+### What Oh My Bash Provides
+
+**Themes (70+)**
+- Custom prompt designs with Git integration
+- Branch, status, and change indicators
+- Python virtualenv and Spack environment display
+- Color schemes and visual customization
+
+**Plugins (24+)**
+- Tool-specific aliases and functions (Git, Docker, Node.js, Python, etc.)
+- Tab completion for command-line tools
+- Environment integration and workflow helpers
+- Note: Plugins provide helpers for tools, they don't install the tools themselves
+
+**Aliases**
+- Organized by category (shell, package managers, development tools)
+- Consistent naming conventions
+- Easy to extend with custom aliases
+
+**Auto-Update System**
+- Keep framework up-to-date automatically
+- Community improvements and bug fixes
+- Configurable update behavior
+
+### What We Customize
+
+The Oh My Bash `custom/` directory contains our unique requirements:
+- Organization-specific aliases
+- Custom functions not available in standard plugins
+- Environment-specific configurations
+- Local overrides and extensions
+
+## Target Operating Systems
+
+### macOS (Primary Development Environment)
+- Full desktop environment with GUI applications
+- Homebrew package management
+- Development tools and utilities
+- macOS-specific system preferences
+
+### Ubuntu 24.04 LTS Workstation
+- Desktop environment with GUI
+- Development tools
+- Docker and containerization support
+- apt package management
+
+### Ubuntu 24.04 LTS Server
+- Headless server configuration
+- Minimal package installation
+- Server utilities and tools
+- Remote administration focus
+
+### Raspberry Pi OS
+- ARM-optimized configurations
+- Lightweight tooling
+- IoT and edge computing use cases
+
+### Legacy Support (in _legacy folder)
+- Ubuntu 20.04, 22.04, 23.04
+- Previous configuration approaches
+- Preserved for reference and migration
+
+## Installation (Planned)
+
+**macOS:**
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/setup.sh)"
+```
+
+**Ubuntu/Raspberry Pi OS:**
+```bash
+bash -c "$(wget -qO - https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/setup.sh)"
+```
 
 The setup process will:
+1. Detect operating system and environment type
+2. Install Oh My Bash with our custom theme and plugins
+3. Run OS-specific package installations
+4. Configure system preferences
+5. Create symlinks for configuration files
+6. Set up development environments (Node.js via nvm, etc.)
 
-* Download the dotfiles on your computer
-  (by default it will suggest `~/projects/dotfiles`).
-* [Symlink][symlink] the [Git], [shell], [tmux],
-  and [Vim] related files.
-* Install applications / command-line tools for
-  [macOS][install macos] / [Ubuntu][install ubuntu].
-* Set custom [macOS][preferences macos] /
-  [Ubuntu][preferences ubuntu] preferences.
-* Install the [Vim][vim plugins] and
-  [VS Code][vscode plugins] plugins.
+## Migration Strategy
 
-Setup process in action:
+### From Legacy System
 
-<!-- markdownlint-disable MD033 -->
-| <video src="https://user-images.githubusercontent.com/1223565/236653425-5beae04a-39e3-4f29-8113-009e402818e6.mp4" title="Setup process on macOS"/> |<video src="https://user-images.githubusercontent.com/1223565/236653424-1702c359-1b68-4815-b3cc-96f6665c5e88.mp4" title="Setup process on Ubuntu"/> |
-|:---:|:---:|
-<!-- markdownlint-enable MD033 -->
+The migration is happening in phases:
 
-Screenshots
------------
+**Phase 1: Framework Setup (Current)**
+- Install Oh My Bash as the foundation
+- Configure base theme and essential plugins
+- Document Oh My Bash capabilities and migration path
 
-### Git
+**Phase 2: Core Functionality**
+- Migrate essential aliases from legacy system
+- Port custom functions to Oh My Bash custom/ directory
+- Set up OS detection and conditional loading
 
-Output for `git status`:
+**Phase 3: OS-Specific Installations**
+- Create installation scripts for each target OS
+- Use standard package managers (no custom installers)
+- Test on each supported platform
 
-| ![Output for Git status on macOS][git output macos] | ![Output for Git status on Ubuntu][git output ubuntu] |
-|:---:|:---:|
-| macOS | Ubuntu |
+**Phase 4: Preferences and Configurations**
+- Port system preferences (macOS defaults, Ubuntu settings)
+- Configure Git, Vim, tmux, etc.
+- Set up application preferences
 
-Output for `git log`:
+**Phase 5: Testing and Refinement**
+- Test on clean installations of each OS
+- Document any manual steps required
+- Create CI/CD workflows for validation
 
-| ![Output for Git log on macOS][git log macos] | ![Output for Git log on Ubuntu][git log ubuntu] |
-|:---:|:---:|
-| macOS | Ubuntu |
+**Phase 6: Deprecation**
+- Mark legacy system as archived
+- Update documentation
+- Provide migration guide for existing users
 
-### tmux & Vim
+## What's Not Migrated
 
-| ![tmux and Vim on macOS][vim macos] | ![tmux and Vim on Ubuntu][vim ubuntu] |
-|:---:|:---:|
-| macOS | Ubuntu |
+Some legacy features are intentionally NOT being migrated:
 
-Customize
----------
+**Custom Implementations Replaced by Oh My Bash:**
+- Custom prompt configurations (use Oh My Bash themes)
+- Manual Git branch parsing (use Git plugin/themes)
+- Hand-written autocomplete scripts (use Oh My Bash completions)
+- Custom color definitions (use Oh My Bash color utilities)
 
-### Local Settings
+**Obsolete or Unused Features:**
+- Configurations for unsupported OS versions
+- Rarely-used custom functions
+- Experimental features from _archive
+- Over-engineered solutions with simpler alternatives
 
-The dotfiles can be easily extended to suit additional local
-requirements by using the following files:
+## Documentation
 
-#### `~/.bash.local`
+- **ai-docs/ABOUT_OHMYBASH.md** - Complete Oh My Bash capabilities guide
+- **ai-docs/ALIASES.md** - Legacy alias documentation
+- **ai-docs/ALIASES_NEW.md** - New alias strategy
+- **ai-docs/BASH_FILE_OVERLAP.md** - File mapping between old and new systems
+- **_legacy/README.md** - Original dotfiles documentation
 
-The `~/.bash.local` file will be automatically sourced after all
-the other [Bash related files][shell], thus, allowing its content
-to add to or overwrite the existing aliases, settings, `PATH`, etc.
+## Contributing
 
-Here is an example:
+This is a personal dotfiles repository, but if you're interested in the approach:
 
-```shell
-#!/bin/bash
+1. Fork the repository
+2. Adapt the OS-specific configurations to your needs
+3. Customize Oh My Bash theme and plugins in your fork
+4. Update installation scripts with your preferred applications
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## License
 
-# Set PATH additions.
+MIT License - Feel free to use this as inspiration for your own dotfiles setup.
 
-PATH="/Users/fredlackey/projects/dotfiles/src/bin/:$PATH"
+## Resources
 
-export PATH
+- [Oh My Bash](https://ohmybash.nntoan.com/) - Shell configuration framework
+- [Oh My Bash GitHub](https://github.com/ohmybash/oh-my-bash) - Source code and documentation
+- [Homebrew](https://brew.sh/) - macOS package manager
+- [Dotfiles community](https://dotfiles.github.io/) - Inspiration and examples
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## Acknowledgments
 
-# Set local aliases.
+- **Oh My Bash community** - For the excellent framework
+- **Original dotfiles author** - For the initial foundation (preserved in _legacy)
+- **Homebrew contributors** - For the best macOS package manager
+- **Open source community** - For the tools that make development better
 
-alias g="git"
-```
+---
 
-#### `~/.gitconfig.local`
+**Current Status:** Active development - framework selection complete, beginning implementation phase.
 
-The `~/.gitconfig.local` file will be automatically included after
-the configurations from `~/.gitconfig`, thus, allowing its content
-to overwrite or add to the existing Git configurations.
-
-__Note:__ Use `~/.gitconfig.local` to store sensitive information
-such as the Git user credentials, e.g.:
-
-```gitconfig
-[commit]
-
-    # Sign commits using GPG.
-    # https://help.github.com/articles/signing-commits-using-gpg/
-
-    gpgSign = true
-
-[user]
-
-    name = Fred Lackey
-    email = account@example.com
-    signingKey = XXXXXXXX
-```
-
-#### `~/.vimrc.local`
-
-The `~/.vimrc.local` file will be automatically sourced after
-`~/.vimrc`, thus, allowing its content to add or overwrite the
-settings from `~/.vimrc`.
-
-Here is an example:
-
-```vim
-" Disable arrow keys in insert mode.
-
-inoremap <Down>  <ESC>:echoe "Use j"<CR>
-inoremap <Left>  <ESC>:echoe "Use h"<CR>
-inoremap <Right> <ESC>:echoe "Use l"<CR>
-inoremap <Up>    <ESC>:echoe "Use k"<CR>
-
-" Disable arrow keys in normal mode.
-
-nnoremap <Down>  :echoe "Use j"<CR>
-nnoremap <Left>  :echoe "Use h"<CR>
-nnoremap <Right> :echoe "Use l"<CR>
-nnoremap <Up>    :echoe "Use k"<CR>
-```
-
-### Forks
-
-If you decide to [fork] this project, do not forget to substitute
-my username with your own in the [`setup` snippets](#setup) and
-[in the `setup` script][setup script].
-
-Update
-------
-
-To update the dotfiles you can either run the [`setup` script][setup]
-or, if you want to update one particular part, run the appropriate
-[`os` script](src/os).
-
-License
--------
-
-The code is available under the [MIT license][license].
-
-<!-- Link labels: -->
-
-[ci badge macos]: https://github.com/fredlackey/dotfiles/workflows/macOS/badge.svg
-[ci badge ubuntu]: https://github.com/fredlackey/dotfiles/workflows/Ubuntu/badge.svg
-[ci link macos]: https://github.com/fredlackey/dotfiles/actions?query=workflow%3AmacOS
-[ci link ubuntu]: https://github.com/fredlackey/dotfiles/actions?query=workflow%3AUbuntu
-[fork]: https://help.github.com/en/github/getting-started-with-github/fork-a-repo
-[git log macos]: https://user-images.githubusercontent.com/1223565/101947422-519fc580-3ba5-11eb-90bc-1438072a45e1.png
-[git log ubuntu]: https://user-images.githubusercontent.com/1223565/101947420-51072f00-3ba5-11eb-9061-efb30ace1c21.png
-[git output macos]: https://user-images.githubusercontent.com/1223565/101947419-51072f00-3ba5-11eb-9e8e-fea987ac97c2.png
-[git output ubuntu]: https://user-images.githubusercontent.com/1223565/101947417-506e9880-3ba5-11eb-805c-0732602c34b3.png
-[Git]: src/git
-[install macos]: src/os/installs/macos
-[install ubuntu]: src/os/installs/ubuntu
-[license]: LICENSE.txt
-[preferences macos]: src/os/preferences/macos
-[preferences ubuntu]: src/os/preferences/ubuntu
-[repo]: https://github.com/fredlackey
-[setup script]: https://github.com/fredlackey/dotfiles/blob/main/src/os/setup.sh#L3
-[setup]: src/os/setup.sh
-[shell]: src/shell
-[symlink]: src/os/create_symbolic_links.sh
-[tmux]: src/tmux
-[vim macos]: https://user-images.githubusercontent.com/1223565/101947425-52385c00-3ba5-11eb-9a2a-13e7910d3673.png
-[vim plugins]: src/vim/vim/pack/minpac/start
-[vim ubuntu]: https://user-images.githubusercontent.com/1223565/101947424-519fc580-3ba5-11eb-83b1-e4c3573315a3.png
-[Vim]: src/vim
-[vscode plugins]: src/os/installs/macos/vscode.sh
+**Next Steps:** Create base Oh My Bash configuration and OS-specific installation scripts.
