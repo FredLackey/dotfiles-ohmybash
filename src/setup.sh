@@ -430,7 +430,7 @@ main() {
 
     # --------------------------------------------------------------------------
 
-    print_in_green "\n   Setup script (Phase 0) completed successfully! \n\n"
+    print_in_green "\n   Setup completed successfully! \n\n"
 
 }
 
