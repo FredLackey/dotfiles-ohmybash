@@ -11,6 +11,58 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "${SCRIPT_DIR}/../common/prompt.sh"
 . "${SCRIPT_DIR}/../common/execution.sh"
 
+# ------------------------------------------------------------------------------
+# | Critical System Prerequisites                                              |
+# ------------------------------------------------------------------------------
+
+install_linux_prerequisites() {
+
+    # Update package lists first
+    execute \
+        "sudo apt-get update -qq" \
+        "Update package lists"
+
+    # Install build-essential (gcc, g++, make, libc-dev, etc.)
+    if ! package_is_installed "build-essential"; then
+        execute \
+            "sudo apt-get install -y build-essential" \
+            "Install build-essential"
+    else
+        print_success "build-essential"
+    fi
+
+    # Install git (version control)
+    if ! cmd_exists "git"; then
+        execute \
+            "sudo apt-get install -y git" \
+            "Install git"
+    else
+        print_success "git"
+    fi
+
+    # Install curl (HTTP client, needed for many downloads)
+    if ! cmd_exists "curl"; then
+        execute \
+            "sudo apt-get install -y curl" \
+            "Install curl"
+    else
+        print_success "curl"
+    fi
+
+    # Verify all critical tools are now available
+    if ! cmd_exists "gcc" || ! cmd_exists "make" || ! cmd_exists "git" || ! cmd_exists "curl"; then
+        print_error "Failed to install all required prerequisites"
+        return 1
+    fi
+
+    return 0
+
+}
+
+# ------------------------------------------------------------------------------
+# | APT Package Management                                                     |
+# ------------------------------------------------------------------------------
+
 add_key() {
 
     wget -qO - "$1" | sudo apt-key add - &> /dev/null

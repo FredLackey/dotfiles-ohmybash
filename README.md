@@ -6,12 +6,12 @@ A complete rebuild of my dotfiles repository using [Oh My Bash](https://ohmybash
 
 **macOS:**
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/src/setup.sh)"
+curl -fsSL https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/src/setup.sh | bash -s -- -y
 ```
 
 **Ubuntu/Raspberry Pi OS:**
 ```bash
-bash -c "$(wget -qO - https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/src/setup.sh)"
+wget -qO - https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/src/setup.sh | bash -s -- -y
 ```
 
 The setup process will:

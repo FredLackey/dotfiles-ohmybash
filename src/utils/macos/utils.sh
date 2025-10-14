@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # File to be sourced by other scripts
-# All brew_* functions (Homebrew package management)
+# macOS-specific utilities: Xcode, Homebrew package management
 
 # Source common utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -9,6 +9,74 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "${SCRIPT_DIR}/../common/logging.sh"
 . "${SCRIPT_DIR}/../common/prompt.sh"
 . "${SCRIPT_DIR}/../common/execution.sh"
+
+# ------------------------------------------------------------------------------
+# | Xcode Command Line Tools                                                   |
+# ------------------------------------------------------------------------------
+
+install_xcode_command_line_tools() {
+
+    # Check if Xcode Command Line Tools are already installed
+    if xcode-select -p &> /dev/null; then
+        print_success "Xcode Command Line Tools"
+        return 0
+    fi
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    # If not installed, trigger installation
+    print_in_yellow "\n   Xcode Command Line Tools are required but not installed.\n"
+    print_in_yellow "   A system dialog will appear.\n"
+    print_in_yellow "   Please click 'Install' and wait for the download to complete.\n\n"
+
+    # Trigger the installation dialog
+    xcode-select --install 2>&1
+
+    # Give the dialog time to appear
+    sleep 2
+
+    # Wait for installation to complete
+    # Poll every 5 seconds until xcode-select -p succeeds
+    print_in_purple "   Waiting for Xcode Command Line Tools installation to complete...\n"
+    print_in_purple "   (This may take several minutes depending on your internet connection)\n\n"
+
+    local attempt=0
+    local max_attempts=360  # 30 minutes maximum (360 * 5 seconds)
+
+    until xcode-select -p &> /dev/null; do
+        attempt=$((attempt + 1))
+
+        if [ $attempt -gt $max_attempts ]; then
+            printf "\n"
+            print_error "Xcode Command Line Tools installation timed out"
+            print_error "Please install manually and re-run this script"
+            return 1
+        fi
+
+        # Show progress every minute (12 attempts = 60 seconds)
+        if [ $((attempt % 12)) -eq 0 ]; then
+            printf "   Still waiting... (%d minutes elapsed)\n" $((attempt / 12))
+        fi
+
+        sleep 5
+    done
+
+    printf "\n"
+
+    # Verify installation succeeded
+    if xcode-select -p &> /dev/null; then
+        print_success "Xcode Command Line Tools installed successfully"
+        return 0
+    else
+        print_error "Xcode Command Line Tools installation verification failed"
+        return 1
+    fi
+
+}
+
+# ------------------------------------------------------------------------------
+# | Homebrew Package Management                                                |
+# ------------------------------------------------------------------------------
 
 brew_install() {
 

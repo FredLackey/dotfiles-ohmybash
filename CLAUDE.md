@@ -298,3 +298,4 @@ When reviewing legacy code in `_legacy/`, consider whether Oh My Bash provides e
 - **IMPORTANT**: Always read the markdown files in the repo for context while ignoring the root _archive and _legacy folders.
 - **IMPORTANT**: The /src/installs/* and /src/preferences/* folders use main.sh entrypoint files. This file is meant to act as an orchestrator to call other scripts within that folder. While it is not neccessary to create these other files we should do so if the main.sh size becomes excessive.
 - **IMPORTANT**: NEVER install or test anything on the local machine!!  This repo is tested on a remote computer.
+- **CRITICAL**: NEVER interogate the local machine to make decisions or update the current machine.  The scripts in this repository are for a DIFFERENT COMPUTER!!!

@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Load NVM (Node Version Manager)
+# This must be loaded before Oh My Bash to ensure node/npm are available
+
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Load Oh My Bash
+
+export OSH="$HOME/.oh-my-bash"
+
+if [ -f "$OSH/oh-my-bash.sh" ]; then
+    # Set Oh My Bash theme
+    OSH_THEME="font"
+
+    # Load Oh My Bash
+    source "$OSH/oh-my-bash.sh"
+fi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Load additional bash configuration files in order
+
+declare -r -a BASH_FILES=(
+    "bash_exports"
+    "bash_aliases"
+    "bash_options"
+    "bash_functions"
+    "bash.local"  # User-specific local settings (not version controlled)
+)
+
+for file in "${BASH_FILES[@]}"; do
+    [ -r "$HOME/.$file" ] && source "$HOME/.$file"
+done
+
+unset file
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Clear system messages (system copyright notice, the date
+# and time of the last login, the message of the day, etc.)
+
+clear

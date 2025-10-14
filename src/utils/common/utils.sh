@@ -312,20 +312,20 @@ create_bash_local() {
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-   if [ ! -e "$FILE_PATH" ] || [ -z "$FILE_PATH" ]; then
-
-        DOTFILES_BIN_DIR="$(dirname "$(pwd)")/bin/"
+   if [ ! -e "$FILE_PATH" ]; then
 
         printf "%s\n" \
 "#!/bin/bash
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Set PATH additions.
+# Local Bash configurations (not tracked in version control)
+# Add your custom aliases, functions, and environment variables here
 
-PATH=\"$DOTFILES_BIN_DIR:\$PATH\"
-
-export PATH" \
+# Example:
+# export MY_CUSTOM_VAR=\"value\"
+# alias myalias=\"command\"
+" \
         >> "$FILE_PATH"
    fi
 
@@ -422,9 +422,9 @@ create_symlinks() {
     local skipQuestions=false
 
     # Files that Oh My Bash manages - we skip these
+    # Note: We DO include bash_profile because we manage NVM and OMB loading ourselves
     declare -a OMB_MANAGED_FILES=(
         ".bashrc"
-        ".bash_profile"
         "bash_prompt"
         "bash_autocompletion"
         "bash_colors"

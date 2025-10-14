@@ -12,9 +12,9 @@
 #
 # Remote execution:
 #   macOS:
-#     bash -c "$(curl -fsSL https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/src/setup.sh)"
+#     curl -fsSL https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/src/setup.sh | bash -s -- -y
 #   Ubuntu/Raspberry Pi OS:
-#     bash -c "$(wget -qO - https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/src/setup.sh)"
+#     wget -qO - https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/src/setup.sh | bash -s -- -y
 
 # ------------------------------------------------------------------------------
 # | Constants                                                                  |
@@ -326,6 +326,40 @@ main() {
         print_in_purple "\n • Update local repository\n\n"
         execute "git pull --rebase" "Pull latest changes from GitHub"
     fi
+
+    # --------------------------------------------------------------------------
+    # | PHASE 0.8: Install Critical OS Prerequisites                          |
+    # --------------------------------------------------------------------------
+    #
+    # CRITICAL: This phase must complete BEFORE any file operations.
+    # These are foundational system tools required for git, compilation, etc.
+    # This phase BLOCKS until all prerequisites are verified as installed.
+    #
+    # --------------------------------------------------------------------------
+
+    print_in_purple "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+    print_in_purple "   CRITICAL OS PREREQUISITES\n"
+    print_in_purple "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+
+    if [ "$os_name" == "macos" ]; then
+        # macOS: Xcode Command Line Tools (required for git, make, gcc, etc.)
+        print_in_yellow "   Installing macOS prerequisites...\n\n"
+        install_xcode_command_line_tools || {
+            print_error "Failed to install Xcode Command Line Tools"
+            print_error "This is required to continue. Please install manually and re-run."
+            exit 1
+        }
+    else
+        # Linux/Ubuntu/Raspberry Pi OS: build-essential and development tools
+        print_in_yellow "   Installing Linux prerequisites...\n\n"
+        install_linux_prerequisites || {
+            print_error "Failed to install Linux prerequisites"
+            print_error "This is required to continue. Please install manually and re-run."
+            exit 1
+        }
+    fi
+
+    print_in_green "\n   ✓ All critical OS prerequisites installed\n\n"
 
     # --------------------------------------------------------------------------
     # | PHASE 1: File System Setup                                            |
