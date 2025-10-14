@@ -293,11 +293,16 @@ main() {
         downloaded_dir="$(download_dotfiles "$dotfilesDirectory" "$skipQuestions")"
 
         # Change to the downloaded dotfiles src directory
-        cd "$downloaded_dir/src" \
-            || exit 1
+        # Check if src/ subdirectory exists, otherwise use the downloaded directory itself
+        if [ -d "$downloaded_dir/src" ]; then
+            cd "$downloaded_dir/src" || exit 1
+            utils_dir="$downloaded_dir/src/utils/common"
+        else
+            cd "$downloaded_dir" || exit 1
+            utils_dir="$downloaded_dir/utils/common"
+        fi
 
         # Re-source utilities from the downloaded location
-        utils_dir="$downloaded_dir/src/utils/common"
         . "${utils_dir}/logging.sh" || exit 1
         . "${utils_dir}/prompt.sh" || exit 1
         . "${utils_dir}/utils.sh" || exit 1
