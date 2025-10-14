@@ -62,8 +62,9 @@ EOF
     # Phase 2.3: Update npm
     print_in_purple "\n   • Update npm\n\n"
 
+    # Source NVM before running npm (execute spawns new shell)
     execute \
-        "npm install --global --silent npm@latest" \
+        "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && npm install --global --silent npm@latest" \
         "Update npm to latest"
 
     print_in_green "\n   Common installations complete\n\n"
