@@ -2,6 +2,26 @@
 
 A complete rebuild of my dotfiles repository using [Oh My Bash](https://ohmybash.nntoan.com/) as the foundation, with OS-specific configurations for macOS, Ubuntu, and Raspberry Pi OS.
 
+## Quick Start
+
+**macOS:**
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/src/setup.sh)"
+```
+
+**Ubuntu/Raspberry Pi OS:**
+```bash
+bash -c "$(wget -qO - https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/src/setup.sh)"
+```
+
+The setup process will:
+1. Detect operating system and environment type
+2. Install Oh My Bash with custom theme and plugins
+3. Run OS-specific package installations
+4. Configure system preferences
+5. Create symlinks for configuration files
+6. Set up development environments (Node.js via nvm, etc.)
+
 ## Project Status
 
 **ACTIVE REBUILD IN PROGRESS**
@@ -167,26 +187,6 @@ The Oh My Bash `custom/` directory contains our unique requirements:
 - Ubuntu 20.04, 22.04, 23.04
 - Previous configuration approaches
 - Preserved for reference and migration
-
-## Installation (Planned)
-
-**macOS:**
-```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/src/setup.sh)"
-```
-
-**Ubuntu/Raspberry Pi OS:**
-```bash
-bash -c "$(wget -qO - https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/src/setup.sh)"
-```
-
-The setup process will:
-1. Detect operating system and environment type
-2. Install Oh My Bash with our custom theme and plugins
-3. Run OS-specific package installations
-4. Configure system preferences
-5. Create symlinks for configuration files
-6. Set up development environments (Node.js via nvm, etc.)
 
 ## Migration Strategy
 
