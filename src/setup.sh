@@ -365,7 +365,7 @@ main() {
     #
     # CRITICAL: Node.js is a fundamental dependency that must be available
     # before any other installations begin. This phase installs NVM (Node
-    # Version Manager) and Node.js 22, then validates that npm is accessible.
+    # Version Manager) and Node.js LTS, then validates that npm is accessible.
     # If this phase fails, the entire installation is aborted.
     #
     # --------------------------------------------------------------------------
@@ -415,28 +415,28 @@ main() {
     export NVM_DIR="$nvm_dir"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-    # Install Node.js 22
-    print_in_yellow "   Installing Node.js 22...\n\n"
+    # Install Node.js LTS
+    print_in_yellow "   Installing Node.js LTS...\n\n"
     execute \
-        ". $bash_local && nvm install 22" \
-        "Install Node.js 22" || {
-        print_error "Failed to install Node.js 22"
+        ". $bash_local && nvm install --lts" \
+        "Install Node.js LTS" || {
+        print_error "Failed to install Node.js LTS"
         print_error "Node.js is required to continue. Please install manually and re-run."
         exit 1
     }
 
-    # Set Node.js 22 as default
+    # Set Node.js LTS as default
     execute \
-        ". $bash_local && nvm alias default 22" \
-        "Set Node.js 22 as default" || {
-        print_error "Failed to set Node.js 22 as default"
+        ". $bash_local && nvm alias default lts/*" \
+        "Set Node.js LTS as default" || {
+        print_error "Failed to set Node.js LTS as default"
         exit 1
     }
 
     # Update npm to latest
     print_in_yellow "   Updating npm...\n\n"
     execute \
-        ". $bash_local && nvm use 22 && npm install --global --silent npm@latest" \
+        ". $bash_local && nvm use default && npm install --global --silent npm@latest" \
         "Update npm to latest" || {
         print_error "Failed to update npm"
         exit 1

@@ -187,7 +187,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 **NEW IN REBUILD:** Node.js is now installed as a Phase 0 critical dependency
 
-**Purpose:** Install Node Version Manager (NVM) and Node.js 22 before any other installations. This is a blocking phase - if it fails, the entire setup aborts.
+**Purpose:** Install Node Version Manager (NVM) and Node.js LTS before any other installations. This is a blocking phase - if it fails, the entire setup aborts.
 
 **Action:**
 
@@ -218,16 +218,19 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
    - Exports `NVM_DIR` environment variable
    - Sources `nvm.sh` to make NVM available in current shell
 
-5. **Install Node.js 22:**
-   - Executes: `. ~/.bash.local && nvm install 22`
+5. **Install Node.js LTS:**
+   - Executes: `. ~/.bash.local && nvm install --lts`
+   - Installs the latest Long Term Support version via NVM
    - Aborts on failure with error message
 
-6. **Set Node.js 22 as Default:**
-   - Executes: `. ~/.bash.local && nvm alias default 22`
+6. **Set Node.js LTS as Default:**
+   - Executes: `. ~/.bash.local && nvm alias default lts/*`
+   - Sets LTS as the default Node.js version
    - Aborts on failure
 
 7. **Update npm:**
-   - Executes: `. ~/.bash.local && nvm use 22 && npm install --global --silent npm@latest`
+   - Executes: `. ~/.bash.local && nvm use default && npm install --global --silent npm@latest`
+   - Uses the default Node.js version (LTS)
    - Updates npm to latest version
    - Aborts on failure
 
@@ -249,10 +252,11 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 - Validates the entire installation succeeded before continuing
 
 **Differences from Legacy:**
-- **Legacy:** NVM/Node installed in Phase 2 (Software Installation)
-- **New:** NVM/Node installed in Phase 0.9 (Bootstrap Prerequisites)
+- **Legacy:** NVM/Node version 22 installed in Phase 2 (Software Installation)
+- **New:** NVM/Node LTS installed in Phase 0.9 (Bootstrap Prerequisites)
 - **Legacy:** No validation checks - failures could go unnoticed
 - **New:** Critical validation with immediate abort on failure
+- **New:** Uses LTS version instead of hardcoded version for better stability
 
 ---
 
@@ -1516,8 +1520,8 @@ PHASE 0: Bootstrap and Prerequisites
 └─ Install NVM and Node.js (NEW: CRITICAL - aborts on failure)
    ├─ Install NVM
    ├─ Configure NVM in .bash.local
-   ├─ Install Node.js 22
-   ├─ Set Node.js 22 as default
+   ├─ Install Node.js LTS
+   ├─ Set Node.js LTS as default
    ├─ Update npm to latest
    └─ Validate NVM, Node, and npm are accessible (CRITICAL)
 
@@ -1626,14 +1630,16 @@ PHASE 6: System Restart (Interactive Only)
 ### Node.js as Phase 0 Critical Dependency
 
 **Legacy:**
-- NVM and Node.js installed in Phase 2 (Software Installation)
+- NVM and Node.js version 22 installed in Phase 2 (Software Installation)
 - Installed as part of common installations
 - No validation checks after installation
 - Failures could go unnoticed until later
+- Hardcoded to specific version
 
 **New:**
-- **NVM and Node.js installed in Phase 0.9 (Bootstrap Prerequisites)**
+- **NVM and Node.js LTS installed in Phase 0.9 (Bootstrap Prerequisites)**
 - **Installed BEFORE file operations and Oh My Bash**
+- **Uses LTS version** instead of hardcoded version for better stability
 - **Critical validation checks:** NVM, Node, and npm must be accessible
 - **Immediate abort on failure** - setup cannot continue without Node.js
 - Better fail-fast approach prevents wasted time on incomplete setup
@@ -1643,6 +1649,7 @@ PHASE 6: System Restart (Interactive Only)
 - Package managers may have Node.js dependencies
 - Configuration tools may need npm packages
 - Early installation ensures availability for all subsequent phases
+- LTS version provides better long-term stability and security
 
 ---
 
@@ -1752,7 +1759,7 @@ PHASE 6: System Restart (Interactive Only)
 **After Phase 2:**
 - [ ] Verify Oh My Bash installed: `ls -la ~/.oh-my-bash`
 - [ ] Verify NVM installed: `command -v nvm`
-- [ ] Verify Node.js 22 installed: `node --version`
+- [ ] Verify Node.js LTS installed: `node --version` (should show LTS version)
 - [ ] Verify Vim installed: `vim --version`
 - [ ] macOS: Verify Homebrew installed: `brew --version`
 - [ ] Ubuntu: Verify Docker installed: `docker --version`
