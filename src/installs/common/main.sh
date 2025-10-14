@@ -66,8 +66,9 @@ main() {
     # Phase 2.3: Update npm
     print_in_purple "\n   • Update npm\n\n"
 
+    # Source .bash.local, activate the Node version we just installed, then update npm
     execute \
-        ". $bash_local && npm install --global --silent npm@latest" \
+        ". $bash_local && nvm use 22 && npm install --global --silent npm@latest" \
         "Update npm to latest"
 
     print_in_green "\n   Common installations complete\n\n"
