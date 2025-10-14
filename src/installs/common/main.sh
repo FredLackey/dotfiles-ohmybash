@@ -66,10 +66,10 @@ main() {
     # Phase 2.3: Update npm
     print_in_purple "\n   • Update npm\n\n"
 
-    # Source .bash.local, use the default Node version, then update npm
-    # Using 'nvm use default' activates the default version we just set
+    # Source .bash.local then update npm
+    # NVM should auto-activate the default version when sourced
     execute \
-        ". $bash_local && nvm use default && npm install --global --silent npm@latest" \
+        ". $bash_local && npm install --global --silent npm@latest" \
         "Update npm to latest"
 
     print_in_green "\n   Common installations complete\n\n"
