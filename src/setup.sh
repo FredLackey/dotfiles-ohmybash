@@ -362,8 +362,43 @@ main() {
     # | PHASE 2: Software Installation                                        |
     # --------------------------------------------------------------------------
 
-    # TODO: Phase 2 will be implemented next
-    print_in_purple "\n   Phase 2: Software Installation (Coming Soon)\n\n"
+    # Step 2.0: Execute Installation Hierarchy
+    # Install software following hierarchy: common → OS family → version → edition
+
+    print_in_purple "\n • Install software packages\n\n"
+
+    # Build installation hierarchy
+    local -a install_hierarchy=("common")
+
+    if [ "$os_name" == "macos" ]; then
+        install_hierarchy+=("macos")
+    elif [ "$os_name" == "raspberry-pi-os" ]; then
+        install_hierarchy+=("pios")
+    else
+        # Ubuntu variants
+        local os_base="${os_name%%-*}"  # ubuntu
+        local os_version="${os_name%-*}"  # ubuntu-24
+
+        install_hierarchy+=("$os_base")
+
+        if [ "$os_version" != "$os_base" ]; then
+            install_hierarchy+=("$os_version")
+        fi
+
+        if [ "$os_version" != "$os_name" ]; then
+            install_hierarchy+=("$os_name")
+        fi
+    fi
+
+    # Execute installation scripts at each hierarchy level
+    for level in "${install_hierarchy[@]}"; do
+        local install_script="installs/${level}/main.sh"
+
+        if [ -f "$install_script" ]; then
+            print_in_purple "\n   • Installing ${level} packages\n\n"
+            bash "$install_script"
+        fi
+    done
 
     # --------------------------------------------------------------------------
     # | PHASE 3: System Preferences Configuration                             |
