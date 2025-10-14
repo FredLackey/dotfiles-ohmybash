@@ -321,19 +321,16 @@ main() {
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    # Phase 0 Complete!
-    print_in_green "\n   Phase 0: Bootstrap Complete \n\n"
 
     # --------------------------------------------------------------------------
     # | PHASE 1: File System Setup                                            |
     # --------------------------------------------------------------------------
 
-    print_in_purple "\n • Phase 1: File System Setup\n\n"
 
     # Step 1.1: Backup Original Bash Files
     # Backup existing .bash* files before creating symlinks
 
-    print_in_purple "\n   • Backup Original Bash Files\n\n"
+    print_in_purple "\n • Backup Original Bash Files\n\n"
     backup_bash_files
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -341,7 +338,7 @@ main() {
     # Step 1.2: Create Symbolic Links
     # Create hierarchical symlinks from dotfiles to home directory
 
-    print_in_purple "\n   • Create Symbolic Links\n\n"
+    print_in_purple "\n • Create symbolic links\n\n"
     create_symlinks "$@"
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -349,15 +346,12 @@ main() {
     # Step 1.3: Create Local Configuration Files
     # Create user-specific config files that are NOT tracked in Git
 
-    print_in_purple "\n   • Create Local Configuration Files\n\n"
+    print_in_purple "\n • Create local config files\n\n"
     create_bash_local
     create_gitconfig_local
     create_vimrc_local
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    # Phase 1 Complete!
-    print_in_green "\n   Phase 1: File System Setup Complete \n\n"
 
     # --------------------------------------------------------------------------
     # | PHASE 2: Software Installation                                        |
