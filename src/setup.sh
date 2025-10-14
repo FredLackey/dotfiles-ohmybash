@@ -133,8 +133,9 @@ download_dotfiles() {
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    # Return the dotfiles directory path
-    printf "%s" "$dotfilesDirectory"
+    # Change directory to the downloaded location (following legacy pattern)
+    cd "$dotfilesDirectory/src" \
+        || return 1
 
 }
 
@@ -290,19 +291,11 @@ main() {
 
     if [ $? -ne 0 ]; then
         # Script was NOT run directly (remote execution)
-        downloaded_dir="$(download_dotfiles "$dotfilesDirectory" "$skipQuestions")"
+        download_dotfiles "$dotfilesDirectory" "$skipQuestions"
 
-        # Change to the downloaded dotfiles src directory
-        # Check if src/ subdirectory exists, otherwise use the downloaded directory itself
-        if [ -d "$downloaded_dir/src" ]; then
-            cd "$downloaded_dir/src" || exit 1
-            utils_dir="$downloaded_dir/src/utils/common"
-        else
-            cd "$downloaded_dir" || exit 1
-            utils_dir="$downloaded_dir/utils/common"
-        fi
-
+        # download_dotfiles already changed to the src directory (following legacy pattern)
         # Re-source utilities from the downloaded location
+        utils_dir="utils/common"
         . "${utils_dir}/logging.sh" || exit 1
         . "${utils_dir}/prompt.sh" || exit 1
         . "${utils_dir}/utils.sh" || exit 1
