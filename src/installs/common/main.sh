@@ -28,9 +28,7 @@ main() {
     # Phase 2.2: Install NVM and Node.js
     print_in_purple "\n   • Install NVM and Node.js\n\n"
 
-    if [ -d "$HOME/.nvm" ]; then
-        print_success "NVM already installed"
-    else
+    if [ ! -d "$HOME/.nvm" ]; then
         execute \
             "git clone https://github.com/nvm-sh/nvm.git $HOME/.nvm" \
             "Install NVM"
@@ -45,26 +43,25 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 EOF
         fi
+    else
+        print_success "NVM already installed"
     fi
 
-    # Source NVM and install Node.js 22
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
+    # Install Node.js 22 (source .bash.local inside execute like legacy)
     execute \
-        "nvm install 22" \
+        ". $HOME/.bash.local && nvm install 22" \
         "Install Node.js 22"
 
     execute \
-        "nvm alias default 22" \
+        ". $HOME/.bash.local && nvm alias default 22" \
         "Set Node.js 22 as default"
 
     # Phase 2.3: Update npm
     print_in_purple "\n   • Update npm\n\n"
 
-    # Source NVM before running npm (execute spawns new shell)
+    # Source .bash.local inside execute (following legacy pattern)
     execute \
-        "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && npm install --global --silent npm@latest" \
+        ". $HOME/.bash.local && npm install --global --silent npm@latest" \
         "Update npm to latest"
 
     print_in_green "\n   Common installations complete\n\n"
