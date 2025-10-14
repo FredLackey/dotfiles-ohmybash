@@ -39,24 +39,32 @@ main() {
         print_success "NVM already installed"
     fi
 
-    # Create NVM source command to use in execute calls
-    # The execute function runs commands in a subshell, so we need to source NVM in each command
-    local nvm_source="export NVM_DIR='$nvm_dir' && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\""
+    # Add NVM configuration to .bash.local for use during installation
+    # (bash_profile also sources NVM for actual shell sessions)
+    if ! grep -q "NVM_DIR" "$HOME/.bash.local" 2>/dev/null; then
+        cat >> "$HOME/.bash.local" <<'EOF'
 
-    # Install Node.js 22
+# NVM configuration (for installation scripts)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+EOF
+    fi
+
+    # Install Node.js 22 (source .bash.local to get NVM in the subshell)
     execute \
-        "$nvm_source && nvm install 22" \
+        ". $HOME/.bash.local && nvm install 22" \
         "Install Node.js 22"
 
     execute \
-        "$nvm_source && nvm alias default 22" \
+        ". $HOME/.bash.local && nvm alias default 22" \
         "Set Node.js 22 as default"
 
     # Phase 2.3: Update npm
     print_in_purple "\n   • Update npm\n\n"
 
     execute \
-        "$nvm_source && npm install --global --silent npm@latest" \
+        ". $HOME/.bash.local && npm install --global --silent npm@latest" \
         "Update npm to latest"
 
     print_in_green "\n   Common installations complete\n\n"
