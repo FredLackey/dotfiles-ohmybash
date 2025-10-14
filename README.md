@@ -172,12 +172,12 @@ The Oh My Bash `custom/` directory contains our unique requirements:
 
 **macOS:**
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/setup.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/src/setup.sh)"
 ```
 
 **Ubuntu/Raspberry Pi OS:**
 ```bash
-bash -c "$(wget -qO - https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/setup.sh)"
+bash -c "$(wget -qO - https://raw.githubusercontent.com/fredlackey/dotfiles-ohmybash/main/src/setup.sh)"
 ```
 
 The setup process will:
