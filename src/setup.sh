@@ -372,20 +372,14 @@ main() {
 
     print_in_purple "\n • Install NVM and Node.js (Critical Dependency)\n\n"
 
-    # NVM directory and config file
+    # NVM directory
     local nvm_dir="${NVM_DIR:-$HOME/.nvm}"
-    local bash_local="$HOME/.bash.local"
 
-    # Create .bash.local if it doesn't exist
-    if [ ! -f "$bash_local" ]; then
-        touch "$bash_local"
-    fi
-
-    # Install NVM
+    # Install NVM using official install script (handles all configuration automatically)
     if [ ! -d "$nvm_dir" ]; then
-        print_in_yellow "   Installing NVM...\n\n"
+        print_in_yellow "   Installing NVM via official installer...\n\n"
         execute \
-            "git clone https://github.com/nvm-sh/nvm.git $nvm_dir" \
+            "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash" \
             "Install NVM" || {
             print_error "Failed to install NVM"
             print_error "NVM is required to continue. Please install manually and re-run."
@@ -395,60 +389,11 @@ main() {
         print_success "NVM already installed"
     fi
 
-    # Configure NVM in .bash.local
-    if ! grep -q "NVM_DIR" "$bash_local" 2>/dev/null; then
-        print_in_yellow "   Configuring NVM...\n\n"
-        execute \
-            "printf '%s\n' '' \
-                '# NVM configuration' \
-                'export NVM_DIR=\"\$HOME/.nvm\"' \
-                '[ -s \"\$NVM_DIR/nvm.sh\" ] && \\. \"\$NVM_DIR/nvm.sh\"' \
-                '[ -s \"\$NVM_DIR/bash_completion\" ] && \\. \"\$NVM_DIR/bash_completion\"' \
-                >> $bash_local" \
-            "Configure NVM in .bash.local" || {
-            print_error "Failed to configure NVM"
-            exit 1
-        }
-    fi
-
     # Source NVM in current shell
     export NVM_DIR="$nvm_dir"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-    # Install Node.js LTS
-    print_in_yellow "   Installing Node.js LTS...\n\n"
-    execute \
-        ". $bash_local && nvm install --lts" \
-        "Install Node.js LTS" || {
-        print_error "Failed to install Node.js LTS"
-        print_error "Node.js is required to continue. Please install manually and re-run."
-        exit 1
-    }
-
-    # Set Node.js LTS as default
-    execute \
-        ". $bash_local && nvm alias default lts/*" \
-        "Set Node.js LTS as default" || {
-        print_error "Failed to set Node.js LTS as default"
-        exit 1
-    }
-
-    # Update npm to latest
-    print_in_yellow "   Updating npm...\n\n"
-    execute \
-        ". $bash_local && nvm use default && npm install --global --silent npm@latest" \
-        "Update npm to latest" || {
-        print_error "Failed to update npm"
-        exit 1
-    }
-
-    # CRITICAL VALIDATION: Verify NVM, Node, and NPM are accessible
-    print_in_yellow "   Validating Node.js installation...\n\n"
-
-    # Re-source to ensure everything is loaded
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-    # Validate NVM
+    # VALIDATE: Check if NVM is accessible
     if ! command -v nvm &> /dev/null && ! type nvm &> /dev/null; then
         print_error "NVM is not accessible after installation"
         print_error "This is a critical failure. Setup cannot continue."
@@ -456,7 +401,17 @@ main() {
     fi
     print_success "NVM is accessible"
 
-    # Validate Node
+    # Install Node.js LTS
+    print_in_yellow "   Installing Node.js LTS...\n\n"
+    execute \
+        "nvm install --lts" \
+        "Install Node.js LTS" || {
+        print_error "Failed to install Node.js LTS"
+        print_error "Node.js is required to continue. Please install manually and re-run."
+        exit 1
+    }
+
+    # VALIDATE: Check if Node is accessible
     if ! command -v node &> /dev/null; then
         print_error "Node.js is not accessible after installation"
         print_error "This is a critical failure. Setup cannot continue."
@@ -465,16 +420,41 @@ main() {
     local node_version=$(node --version)
     print_success "Node.js is accessible (${node_version})"
 
-    # Validate NPM
+    # Set Node.js LTS as default
+    execute \
+        "nvm alias default lts/*" \
+        "Set Node.js LTS as default" || {
+        print_error "Failed to set Node.js LTS as default"
+        exit 1
+    }
+
+    # VALIDATE: Check if default alias was created
+    if ! nvm alias | grep -q "default"; then
+        print_error "Failed to create default alias for Node.js"
+        print_error "This is a critical failure. Setup cannot continue."
+        exit 1
+    fi
+    print_success "Default alias set successfully"
+
+    # Update npm to latest
+    print_in_yellow "   Updating npm...\n\n"
+    execute \
+        "npm install --global --silent npm@latest" \
+        "Update npm to latest" || {
+        print_error "Failed to update npm"
+        exit 1
+    }
+
+    # FINAL VALIDATION: Verify npm is still accessible after update
     if ! command -v npm &> /dev/null; then
-        print_error "npm is not accessible after installation"
+        print_error "npm is not accessible after update"
         print_error "This is a critical failure. Setup cannot continue."
         exit 1
     fi
     local npm_version=$(npm --version)
-    print_success "npm is accessible (${npm_version})"
+    print_success "npm updated successfully (${npm_version})"
 
-    print_in_green "\n   ✓ NVM, Node.js, and npm validated successfully\n\n"
+    print_in_green "\n   ✓ NVM, Node.js, and npm installation complete\n\n"
 
     # --------------------------------------------------------------------------
     # | PHASE 1: File System Setup                                            |
