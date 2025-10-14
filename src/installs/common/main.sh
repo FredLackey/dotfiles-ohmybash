@@ -66,10 +66,10 @@ main() {
     # Phase 2.3: Update npm
     print_in_purple "\n   • Update npm\n\n"
 
-    # Source .bash.local then update npm
-    # NVM should auto-activate the default version when sourced
+    # Source .bash.local, explicitly activate Node 22, then update npm
+    # We use 'nvm use 22' to activate the Node 22.x.x version we just installed
     execute \
-        ". $bash_local && npm install --global --silent npm@latest" \
+        ". $bash_local && nvm use 22 && npm install --global --silent npm@latest" \
         "Update npm to latest"
 
     print_in_green "\n   Common installations complete\n\n"
