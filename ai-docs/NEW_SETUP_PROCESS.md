@@ -181,6 +181,81 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 ---
 
+### Step 0.9: Install NVM and Node.js (Critical Dependency)
+
+**File:** `src/setup.sh` (NEW - Phase 0.9)
+
+**NEW IN REBUILD:** Node.js is now installed as a Phase 0 critical dependency
+
+**Purpose:** Install Node Version Manager (NVM) and Node.js 22 before any other installations. This is a blocking phase - if it fails, the entire setup aborts.
+
+**Action:**
+
+1. **Create .bash.local:**
+   - Creates `~/.bash.local` if it doesn't exist
+   - This file will store NVM configuration
+
+2. **Install NVM:**
+   - Checks if `~/.nvm` directory exists
+   - If not exists:
+     - Clones NVM repository: `git clone https://github.com/nvm-sh/nvm.git ~/.nvm`
+     - Aborts on failure with error message
+   - If exists: Reports success (already installed)
+
+3. **Configure NVM in .bash.local:**
+   - Checks if NVM_DIR is already in `~/.bash.local`
+   - If not configured:
+     - Adds NVM configuration block:
+       ```bash
+       # NVM configuration
+       export NVM_DIR="$HOME/.nvm"
+       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+       [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+       ```
+     - Aborts on failure
+
+4. **Source NVM:**
+   - Exports `NVM_DIR` environment variable
+   - Sources `nvm.sh` to make NVM available in current shell
+
+5. **Install Node.js 22:**
+   - Executes: `. ~/.bash.local && nvm install 22`
+   - Aborts on failure with error message
+
+6. **Set Node.js 22 as Default:**
+   - Executes: `. ~/.bash.local && nvm alias default 22`
+   - Aborts on failure
+
+7. **Update npm:**
+   - Executes: `. ~/.bash.local && nvm use 22 && npm install --global --silent npm@latest`
+   - Updates npm to latest version
+   - Aborts on failure
+
+8. **CRITICAL VALIDATION:**
+   - **Validates NVM:** Checks if `nvm` command is accessible
+     - Uses both `command -v nvm` and `type nvm` for reliability
+     - Aborts if not accessible
+   - **Validates Node:** Checks if `node` command is accessible
+     - Gets and displays Node version
+     - Aborts if not accessible
+   - **Validates NPM:** Checks if `npm` command is accessible
+     - Gets and displays npm version
+     - Aborts if not accessible
+
+**Why This is Critical:**
+- Node.js/npm may be required by other installation scripts
+- Package managers (Homebrew, apt) may have Node.js dependencies
+- Better to fail early than discover missing Node.js mid-installation
+- Validates the entire installation succeeded before continuing
+
+**Differences from Legacy:**
+- **Legacy:** NVM/Node installed in Phase 2 (Software Installation)
+- **New:** NVM/Node installed in Phase 0.9 (Bootstrap Prerequisites)
+- **Legacy:** No validation checks - failures could go unnoticed
+- **New:** Critical validation with immediate abort on failure
+
+---
+
 ## PHASE 1: File System Setup
 
 This phase backs up existing files and creates the dotfiles structure in the user's home directory.
@@ -442,18 +517,18 @@ src/installs/ubuntu-24-svr/main.sh    # Ubuntu 24 Server specific installations
 
 **Purpose:** Install software that is universal across all OSes
 
+**IMPORTANT:** NVM and Node.js are now installed in Phase 0.9 (before this phase) as critical dependencies.
+
 **Execution Order:**
 
 1. **Source Utilities:**
    ```bash
    source "${script_dir}/../utils/common/utils.sh"
    source "${script_dir}/../utils/common/logging.sh"
-   source "${script_dir}/../utils/common/prompt.sh"
    source "${script_dir}/../utils/common/execution.sh"
    ```
 
 2. **Install Oh My Bash:**
-   - **File:** `src/installs/common/oh-my-bash.sh`
    - **Action:**
      - Check if `~/.oh-my-bash` already exists
      - If not exists:
@@ -468,49 +543,9 @@ src/installs/ubuntu-24-svr/main.sh    # Ubuntu 24 Server specific installations
 
    **NEW in New System:** Oh My Bash installation happens here
 
-3. **Install NVM and Node.js:**
-   - **File:** `src/installs/common/nvm.sh`
-   - **Action:**
-     - Check if `$HOME/.nvm` exists
-     - If not exists: Clone NVM repo from GitHub
-     - If exists: Update to latest version via git pull
-     - Add NVM configuration to `~/.bash.local`:
-       ```bash
-       export NVM_DIR="$HOME/.nvm"
-       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-       [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-       ```
-     - Source the updated config
-     - Install Node.js 22: `nvm install 22`
-     - Set as default: `nvm alias default 22`
-
-   **Same as Legacy:** Shared script approach maintained
-
-4. **Install Vim with minpac:**
-   - **File:** `src/installs/common/vim.sh`
-   - **Action:**
-     - Calls OS-specific Vim installation first:
-       - macOS: Vim already installed (use OS-provided)
-       - Ubuntu: Will install via apt (handled in ubuntu/main.sh)
-     - Install minpac plugin manager:
-       - Remove existing pack directory: `rm -rf ~/.vim/pack`
-       - Clone minpac from GitHub to `~/.vim/pack/minpac/opt/minpac`
-       - Execute Vim command: `vim +PluginsSetup` (custom command in .vimrc)
-     - minpac installs all configured plugins
-
-   **Same as Legacy:** Shared script approach maintained
-
-5. **Update npm:**
-   - **File:** `src/installs/common/npm.sh`
-   - **Action:**
-     - Source `~/.bash.local` to load NVM/Node
-     - Execute: `npm install --global --silent npm`
-     - Updates npm to latest version globally
-
-   **Same as Legacy:** Shared script approach maintained
-
 **Key Differences from Legacy:**
-- **Oh My Bash installation added** as first major step
+- **Oh My Bash installation added** as major step
+- **NVM/Node/npm installation REMOVED** - now in Phase 0.9
 - All common installations in one place
 - Legacy had these scattered across OS-specific files
 
@@ -1476,7 +1511,15 @@ PHASE 0: Bootstrap and Prerequisites
 ├─ Verify OS and version (NEW: Stricter version requirements)
 ├─ Parse arguments (-y flag)
 ├─ Request sudo access
-└─ Download dotfiles (if remote execution)
+├─ Download dotfiles (if remote execution)
+├─ Install critical OS prerequisites (Xcode CLI Tools / build-essential)
+└─ Install NVM and Node.js (NEW: CRITICAL - aborts on failure)
+   ├─ Install NVM
+   ├─ Configure NVM in .bash.local
+   ├─ Install Node.js 22
+   ├─ Set Node.js 22 as default
+   ├─ Update npm to latest
+   └─ Validate NVM, Node, and npm are accessible (CRITICAL)
 
 PHASE 1: File System Setup
 ├─ Backup existing .bash* files
@@ -1487,10 +1530,8 @@ PHASE 2: Software Installation
 ├─ [Hierarchical Execution from common → OS → version → edition]
 │
 ├─ COMMON (all OSes):
-│  ├─ Install Oh My Bash (NEW)
-│  ├─ Install NVM and Node.js 22
-│  ├─ Install Vim with minpac plugins
-│  └─ Update npm
+│  └─ Install Oh My Bash (NEW)
+│     (Note: NVM/Node.js now installed in Phase 0.9)
 │
 ├─ macOS:
 │  ├─ Install Xcode CLI Tools (NOT full Xcode.app) (CHANGED)
@@ -1582,6 +1623,29 @@ PHASE 6: System Restart (Interactive Only)
 
 ## Key Architectural Differences Summary
 
+### Node.js as Phase 0 Critical Dependency
+
+**Legacy:**
+- NVM and Node.js installed in Phase 2 (Software Installation)
+- Installed as part of common installations
+- No validation checks after installation
+- Failures could go unnoticed until later
+
+**New:**
+- **NVM and Node.js installed in Phase 0.9 (Bootstrap Prerequisites)**
+- **Installed BEFORE file operations and Oh My Bash**
+- **Critical validation checks:** NVM, Node, and npm must be accessible
+- **Immediate abort on failure** - setup cannot continue without Node.js
+- Better fail-fast approach prevents wasted time on incomplete setup
+
+**Why This Matters:**
+- Node.js may be required by other installation scripts
+- Package managers may have Node.js dependencies
+- Configuration tools may need npm packages
+- Early installation ensures availability for all subsequent phases
+
+---
+
 ### Hierarchical Execution
 
 **Legacy:**
@@ -1641,6 +1705,9 @@ PHASE 6: System Restart (Interactive Only)
 **What's NEW:**
 - ✅ Oh My Bash framework
 - ✅ Cursor (AI-powered editor)
+
+**What Moved:**
+- 🔄 NVM and Node.js moved from Phase 2 to Phase 0.9 (critical dependency)
 
 ---
 

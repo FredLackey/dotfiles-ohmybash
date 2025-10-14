@@ -360,6 +360,123 @@ main() {
     print_in_green "\n   ✓ All critical OS prerequisites installed\n\n"
 
     # --------------------------------------------------------------------------
+    # | PHASE 0.9: Install NVM and Node.js (CRITICAL DEPENDENCY)             |
+    # --------------------------------------------------------------------------
+    #
+    # CRITICAL: Node.js is a fundamental dependency that must be available
+    # before any other installations begin. This phase installs NVM (Node
+    # Version Manager) and Node.js 22, then validates that npm is accessible.
+    # If this phase fails, the entire installation is aborted.
+    #
+    # --------------------------------------------------------------------------
+
+    print_in_purple "\n • Install NVM and Node.js (Critical Dependency)\n\n"
+
+    # NVM directory and config file
+    local nvm_dir="${NVM_DIR:-$HOME/.nvm}"
+    local bash_local="$HOME/.bash.local"
+
+    # Create .bash.local if it doesn't exist
+    if [ ! -f "$bash_local" ]; then
+        touch "$bash_local"
+    fi
+
+    # Install NVM
+    if [ ! -d "$nvm_dir" ]; then
+        print_in_yellow "   Installing NVM...\n\n"
+        execute \
+            "git clone https://github.com/nvm-sh/nvm.git $nvm_dir" \
+            "Install NVM" || {
+            print_error "Failed to install NVM"
+            print_error "NVM is required to continue. Please install manually and re-run."
+            exit 1
+        }
+    else
+        print_success "NVM already installed"
+    fi
+
+    # Configure NVM in .bash.local
+    if ! grep -q "NVM_DIR" "$bash_local" 2>/dev/null; then
+        print_in_yellow "   Configuring NVM...\n\n"
+        execute \
+            "printf '%s\n' '' \
+                '# NVM configuration' \
+                'export NVM_DIR=\"\$HOME/.nvm\"' \
+                '[ -s \"\$NVM_DIR/nvm.sh\" ] && \\. \"\$NVM_DIR/nvm.sh\"' \
+                '[ -s \"\$NVM_DIR/bash_completion\" ] && \\. \"\$NVM_DIR/bash_completion\"' \
+                >> $bash_local" \
+            "Configure NVM in .bash.local" || {
+            print_error "Failed to configure NVM"
+            exit 1
+        }
+    fi
+
+    # Source NVM in current shell
+    export NVM_DIR="$nvm_dir"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+    # Install Node.js 22
+    print_in_yellow "   Installing Node.js 22...\n\n"
+    execute \
+        ". $bash_local && nvm install 22" \
+        "Install Node.js 22" || {
+        print_error "Failed to install Node.js 22"
+        print_error "Node.js is required to continue. Please install manually and re-run."
+        exit 1
+    }
+
+    # Set Node.js 22 as default
+    execute \
+        ". $bash_local && nvm alias default 22" \
+        "Set Node.js 22 as default" || {
+        print_error "Failed to set Node.js 22 as default"
+        exit 1
+    }
+
+    # Update npm to latest
+    print_in_yellow "   Updating npm...\n\n"
+    execute \
+        ". $bash_local && nvm use 22 && npm install --global --silent npm@latest" \
+        "Update npm to latest" || {
+        print_error "Failed to update npm"
+        exit 1
+    }
+
+    # CRITICAL VALIDATION: Verify NVM, Node, and NPM are accessible
+    print_in_yellow "   Validating Node.js installation...\n\n"
+
+    # Re-source to ensure everything is loaded
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+    # Validate NVM
+    if ! command -v nvm &> /dev/null && ! type nvm &> /dev/null; then
+        print_error "NVM is not accessible after installation"
+        print_error "This is a critical failure. Setup cannot continue."
+        exit 1
+    fi
+    print_success "NVM is accessible"
+
+    # Validate Node
+    if ! command -v node &> /dev/null; then
+        print_error "Node.js is not accessible after installation"
+        print_error "This is a critical failure. Setup cannot continue."
+        exit 1
+    fi
+    local node_version=$(node --version)
+    print_success "Node.js is accessible (${node_version})"
+
+    # Validate NPM
+    if ! command -v npm &> /dev/null; then
+        print_error "npm is not accessible after installation"
+        print_error "This is a critical failure. Setup cannot continue."
+        exit 1
+    fi
+    local npm_version=$(npm --version)
+    print_success "npm is accessible (${npm_version})"
+
+    print_in_green "\n   ✓ NVM, Node.js, and npm validated successfully\n\n"
+
+    # --------------------------------------------------------------------------
     # | PHASE 1: File System Setup                                            |
     # --------------------------------------------------------------------------
 
