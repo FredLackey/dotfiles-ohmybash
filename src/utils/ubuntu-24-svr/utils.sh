@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # File to be sourced by other scripts
-# Ubuntu 24.04 Workstation specific utilities
+# Ubuntu 24.04 Server specific utilities
 
 # Source Ubuntu 24 version utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

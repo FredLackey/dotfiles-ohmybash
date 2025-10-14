@@ -3,6 +3,13 @@
 # File to be sourced by other scripts
 # All brew_* functions (Homebrew package management)
 
+# Source common utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "${SCRIPT_DIR}/../common/utils.sh"
+. "${SCRIPT_DIR}/../common/logging.sh"
+. "${SCRIPT_DIR}/../common/prompt.sh"
+. "${SCRIPT_DIR}/../common/execution.sh"
+
 brew_install() {
 
     declare -r ARGUMENTS="$3"

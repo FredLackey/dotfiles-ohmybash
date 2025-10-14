@@ -4,6 +4,13 @@
 # All apt functions + repository management
 # (used by all Ubuntu versions AND Raspberry Pi OS)
 
+# Source common utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "${SCRIPT_DIR}/../common/utils.sh"
+. "${SCRIPT_DIR}/../common/logging.sh"
+. "${SCRIPT_DIR}/../common/prompt.sh"
+. "${SCRIPT_DIR}/../common/execution.sh"
+
 add_key() {
 
     wget -qO - "$1" | sudo apt-key add - &> /dev/null

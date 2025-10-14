@@ -140,16 +140,30 @@ download_dotfiles() {
 
 download_utils() {
 
-    local tmpFile=""
+    local tmpDir=""
+    local utilFiles=("utils.sh" "logging.sh" "prompt.sh" "execution.sh")
+    local baseUrl="https://raw.githubusercontent.com/$GITHUB_REPOSITORY/main/src/utils/common"
 
-    tmpFile="$(mktemp /tmp/XXXXX)"
+    tmpDir="$(mktemp -d)"
 
-    download "$DOTFILES_UTILS_URL" "$tmpFile" \
-        && . "$tmpFile" \
-        && rm -rf "$tmpFile" \
-        && return 0
+    # Download all utility files
+    for file in "${utilFiles[@]}"; do
+        download "$baseUrl/$file" "$tmpDir/$file" || {
+            rm -rf "$tmpDir"
+            return 1
+        }
+    done
 
-   return 1
+    # Source all utility files in order
+    . "$tmpDir/logging.sh" || return 1
+    . "$tmpDir/prompt.sh" || return 1
+    . "$tmpDir/utils.sh" || return 1
+    . "$tmpDir/execution.sh" || return 1
+
+    # Cleanup
+    rm -rf "$tmpDir"
+
+    return 0
 
 }
 
@@ -234,6 +248,25 @@ main() {
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    # Step 0.3a: Load OS-Specific Utilities
+    # Source the most specific OS utils.sh file, which will chain-source the rest
+    # Following SOURCE_PROCESS.md: setup.sh sources OS-specific utils.sh
+
+    local os_name="$(get_os_name)"
+    local os_utils_path="${utils_dir}/../${os_name}/utils.sh"
+
+    # Source the most specific utils.sh file if it exists
+    # The file will automatically chain-source up the hierarchy
+    if [ -f "$os_utils_path" ]; then
+        . "$os_utils_path"
+    else
+        # Fallback to OS family if specific edition doesn't exist
+        local os_base="${os_name%%-*}"
+        [ -f "${utils_dir}/../${os_base}/utils.sh" ] && . "${utils_dir}/../${os_base}/utils.sh"
+    fi
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
     # Step 0.4: Parse Arguments
     # Check for -y or --yes flag to skip confirmation prompts
 
@@ -265,10 +298,25 @@ main() {
 
         # Re-source utilities from the downloaded location
         utils_dir="$downloaded_dir/src/utils/common"
-        . "${utils_dir}/utils.sh" || exit 1
         . "${utils_dir}/logging.sh" || exit 1
         . "${utils_dir}/prompt.sh" || exit 1
+        . "${utils_dir}/utils.sh" || exit 1
         . "${utils_dir}/execution.sh" || exit 1
+
+        # Re-source OS-specific utilities from the downloaded location
+        # Source the most specific OS utils.sh file, which will chain-source the rest
+        os_name="$(get_os_name)"
+        local os_utils_path="${utils_dir}/../${os_name}/utils.sh"
+
+        # Source the most specific utils.sh file if it exists
+        # The file will automatically chain-source up the hierarchy
+        if [ -f "$os_utils_path" ]; then
+            . "$os_utils_path"
+        else
+            # Fallback to OS family if specific edition doesn't exist
+            os_base="${os_name%%-*}"
+            [ -f "${utils_dir}/../${os_base}/utils.sh" ] && . "${utils_dir}/../${os_base}/utils.sh"
+        fi
     fi
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
