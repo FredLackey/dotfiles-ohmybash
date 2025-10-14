@@ -28,7 +28,7 @@ ask_for_sudo() {
 
     # Ask for the administrator password upfront.
 
-    sudo -v &> /dev/null
+    sudo -v
 
     # Update existing `sudo` time stamp
     # until this script has finished.

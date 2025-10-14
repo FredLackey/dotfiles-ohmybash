@@ -321,6 +321,13 @@ main() {
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    # Step 0.7: Update Local Repository (If Git Repository)
+    # Pull latest changes from GitHub if this is a git repository
+
+    if is_git_repository; then
+        print_in_purple "\n • Update local repository\n\n"
+        execute "git pull --rebase" "Pull latest changes from GitHub"
+    fi
 
     # --------------------------------------------------------------------------
     # | PHASE 1: File System Setup                                            |
