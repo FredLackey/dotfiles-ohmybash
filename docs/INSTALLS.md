@@ -10,12 +10,13 @@ This document lists all packages and tools installed by the dotfiles system for 
 ### Shell & Terminal
 - **Bash** - DO NOT INSTALL (use OS-provided version)
 - **Bash Completion 2** - DO NOT INSTALL (use Oh My Bash completions)
+- **wget** - File download utility (macOS doesn't include this by default)
 - **tmux** - Terminal multiplexer
 - **Pasteboard** - DO NOT INSTALL
 
 ### Development Tools - Core
-- **Xcode Command Line Tools** - Essential development utilities
-- **Xcode.app** - Apple's integrated development environment
+- **Xcode Command Line Tools** - Essential development utilities (prerequisite)
+- **Xcode.app** - DO NOT INSTALL (legacy only - not needed unless doing iOS/macOS development)
 - **Git** - Distributed version control system
 - **GPG** - DO NOT INSTALL
 - **Pinentry** - DO NOT INSTALL
@@ -90,7 +91,7 @@ This document lists all packages and tools installed by the dotfiles system for 
 - **Zoom** - Video conferencing
 
 ### Mac App Store Apps
-- **Xcode** - Apple IDE
+- **Xcode** - DO NOT INSTALL (legacy only - 10+ GB, only needed for iOS/macOS development)
 - **LanScan** - Network scanner
 - **Magnet** - DO NOT INSTALL
 
@@ -124,6 +125,7 @@ This document lists all packages and tools installed by the dotfiles system for 
 ### Docker Prerequisites
 - **ca-certificates** - Common CA certificates
 - **curl** - Data transfer tool
+- **wget** - File download utility
 - **software-properties-common** - Software repository management
 - **gnupg** - GNU Privacy Guard
 
@@ -170,6 +172,7 @@ This document lists all packages and tools installed by the dotfiles system for 
 ### Docker Prerequisites
 - **ca-certificates** - Common CA certificates
 - **curl** - Data transfer tool
+- **wget** - File download utility
 - **software-properties-common** - Software repository management
 - **gnupg** - GNU Privacy Guard
 
@@ -243,6 +246,8 @@ This document lists all packages and tools installed by the dotfiles system for 
 
 ### Docker Prerequisites
 - **ca-certificates** - Common CA certificates
+- **curl** - HTTP client and data transfer
+- **wget** - File download utility (also in System Tools)
 - **software-properties-common** - Software repository management
 - **gnupg** - GNU Privacy Guard
 
@@ -256,6 +261,8 @@ This document lists all packages and tools installed by the dotfiles system for 
 ## Common Components
 
 ### Present on All Operating Systems
+- **curl** - HTTP client and data transfer (pre-installed on macOS, installed on Linux)
+- **wget** - File download utility (installed on macOS via Homebrew, pre-installed or installed on Linux)
 - **NVM** - Node Version Manager with Node.js 22
 - **npm** - DO NOT INSTALL (ships with Node.js)
 - **Vim** - With minpac plugin manager
@@ -270,8 +277,14 @@ This document lists all packages and tools installed by the dotfiles system for 
 - Includes extensive GUI applications
 - Mac App Store integrations
 - VS Code installed with 30+ extensions
-- Development tools include Xcode
+- Development tools include Xcode Command Line Tools (NOT full Xcode.app)
 - Creative and productivity suites included
+- wget must be installed (macOS only includes curl by default)
+
+### Legacy vs. New System
+- **Legacy system installed:** Xcode.app (full IDE, 10+ GB)
+- **New system installs:** Only Xcode Command Line Tools (required for development)
+- **Reason for change:** Xcode.app is only needed for iOS/macOS app development, which is not part of this dotfiles use case
 
 ### Ubuntu Server
 - Minimal installation without GUI applications
