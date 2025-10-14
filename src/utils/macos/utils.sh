@@ -29,8 +29,8 @@ install_xcode_command_line_tools() {
     print_in_yellow "   A system dialog will appear.\n"
     print_in_yellow "   Please click 'Install' and wait for the download to complete.\n\n"
 
-    # Trigger the installation dialog
-    xcode-select --install 2>&1
+    # Trigger the installation dialog (suppress xcode-select's output since we show our own messages)
+    xcode-select --install &> /dev/null
 
     # Give the dialog time to appear
     sleep 2

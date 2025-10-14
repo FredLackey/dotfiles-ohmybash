@@ -337,9 +337,7 @@ main() {
     #
     # --------------------------------------------------------------------------
 
-    print_in_purple "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-    print_in_purple "   CRITICAL OS PREREQUISITES\n"
-    print_in_purple "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+    print_in_purple "\n • Install critical OS prerequisites\n\n"
 
     if [ "$os_name" == "macos" ]; then
         # macOS: Xcode Command Line Tools (required for git, make, gcc, etc.)
