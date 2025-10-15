@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2025-01-14
+**Last Updated:** 2025-01-15
 
 ## Overview
 
@@ -21,6 +21,19 @@ Rebuilding dotfiles system on Oh My Bash foundation. Ground-up rewrite with hier
 
 **Tested:** Local execution successful
 
+## Phase 0.8: Critical OS Prerequisites ✅
+
+**Status:** Complete
+**File:** `src/setup.sh` (lines 330-360)
+
+- [x] macOS: Xcode Command Line Tools installation
+- [x] Linux: build-essential and development tools installation
+- [x] Blocking validation - setup aborts if prerequisites fail
+
+**Purpose:** Install foundational system tools required for git, compilation, and package managers before any file operations or software installations.
+
+**Tested:** Implemented and integrated into setup flow
+
 ## Phase 1: File System Setup ✅
 
 **Status:** Complete
@@ -32,15 +45,29 @@ Rebuilding dotfiles system on Oh My Bash foundation. Ground-up rewrite with hier
 
 **Tested:** Pending - needs files in `src/files/` structure to test symlink creation
 
-## Phase 2: Software Installation
+## Phase 2: Software Installation ✅
 
-**Status:** Not Started
+**Status:** Complete - Base Implementations Done
 **Target:** Hierarchical main.sh files
 
-- [ ] Common installs (Oh My Bash, NVM, Node, Vim)
-- [ ] macOS installs
-- [ ] Ubuntu installs
-- [ ] Raspberry Pi OS installs
+- [x] Common installs (Oh My Bash, NVM, Node.js 22)
+- [x] macOS installs (Homebrew, Git, tmux, NeoVim)
+- [x] Ubuntu installs (Git, tmux, NeoVim)
+- [x] Raspberry Pi OS installs (NeoVim)
+
+**Implemented Files:**
+- `src/installs/common/main.sh` - NVM, Node.js 22, Oh My Bash
+- `src/installs/macos/main.sh` - Homebrew, Git, tmux, NeoVim
+- `src/installs/ubuntu/main.sh` - Git, tmux, NeoVim
+- `src/installs/debian/main.sh` - Git, tmux, NeoVim
+- `src/installs/pios/main.sh` - NeoVim
+
+**NeoVim Note:**
+- ✅ NeoVim package installation complete
+- ⏳ Plugin manager and plugin setup deferred (will use NeoVim ecosystem, not legacy Vim plugins)
+- 📝 Plugin selection and configuration will be addressed in future iteration
+
+**Tested:** Installation hierarchy working in setup.sh (lines 393-433)
 
 ## Phase 3: System Preferences
 

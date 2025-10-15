@@ -20,7 +20,7 @@ This document lists all packages and tools installed by the dotfiles system for 
 - **Git** - Distributed version control system
 - **GPG** - DO NOT INSTALL
 - **Pinentry** - DO NOT INSTALL
-- **Vim** - Text editor with minpac plugin manager
+- **NeoVim** - Modern Vim fork (base installation only; plugin manager/plugins TBD)
 - **Visual Studio Code** - Modern code editor with 30+ extensions
 - **Cursor** - AI-powered code editor
 
@@ -113,7 +113,7 @@ This document lists all packages and tools installed by the dotfiles system for 
 - **Node.js 22** - JavaScript runtime via NVM
 - **npm** - DO NOT INSTALL (ships with Node.js)
 - **Yarn** - DO NOT INSTALL
-- **Vim** - Text editor with minpac plugin manager
+- **NeoVim** - Modern Vim fork (base installation only; plugin manager/plugins TBD)
 
 ### Container Platform
 - **docker-ce** - Docker Community Edition
@@ -160,7 +160,7 @@ This document lists all packages and tools installed by the dotfiles system for 
 - **Node.js 22** - JavaScript runtime via NVM
 - **npm** - DO NOT INSTALL (ships with Node.js)
 - **Yarn** - DO NOT INSTALL
-- **Vim** - Text editor with minpac plugin manager
+- **NeoVim** - Modern Vim fork (base installation only; plugin manager/plugins TBD)
 
 ### Container Platform
 - **docker-ce** - Docker Community Edition
@@ -235,7 +235,7 @@ This document lists all packages and tools installed by the dotfiles system for 
 - **NVM** - Node Version Manager
 - **Node.js 22** - JavaScript runtime via NVM
 - **npm** - DO NOT INSTALL (ships with Node.js)
-- **Vim** - Text editor with minpac plugin manager
+- **NeoVim** - Modern Vim fork (base installation only; plugin manager/plugins TBD)
 
 ### Container Platform
 - **docker-ce** - Docker Community Edition
@@ -265,7 +265,7 @@ This document lists all packages and tools installed by the dotfiles system for 
 - **wget** - File download utility (installed on macOS via Homebrew, pre-installed or installed on Linux)
 - **NVM** - Node Version Manager with Node.js 22
 - **npm** - DO NOT INSTALL (ships with Node.js)
-- **Vim** - With minpac plugin manager
+- **NeoVim** - Base installation (plugin ecosystem selection deferred)
 - **tmux** - Terminal multiplexer
 - **Git** - Version control system
 - **Docker** - Full CE installation with Compose and Buildx plugins
@@ -301,3 +301,31 @@ This document lists all packages and tools installed by the dotfiles system for 
 - ARM-optimized Docker installation
 - Python development tools included
 - Raspberry Pi specific configuration utilities
+
+### NeoVim vs. Legacy Vim Approach
+
+**Important Change from Legacy System:**
+
+**Legacy System (_legacy/):**
+- Installed classic `vim` package
+- Used `minpac` plugin manager
+- Installed 20+ Vim-specific plugins:
+  - vim-colors-solarized, vim-css-color, vim-es6, vim-javascript-syntax
+  - vim-indent-guides, vim-signify, vim-fugitive, vim-surround
+  - ctrlp.vim, emmet-vim, syntastic, neocomplcache
+  - And many more Vim ecosystem plugins
+- Full plugin setup automated via `vim +PluginsSetup`
+
+**New System (current):**
+- Installs modern `neovim` package only
+- **NO legacy Vim plugins ported** - clean slate approach
+- Plugin manager selection deferred (will likely use modern NeoVim native solutions like `lazy.nvim`, `packer.nvim`, or built-in package management)
+- Plugin ecosystem will use NeoVim-native plugins and Lua-based configurations
+- Configuration and plugin selection to be determined in future iteration based on actual needs
+
+**Rationale:**
+- NeoVim has its own ecosystem with better performance and modern features
+- Many legacy Vim plugins have NeoVim-native alternatives with better Lua integration
+- Starting fresh allows us to select only needed plugins for current workflow
+- Avoids carrying forward 10+ years of accumulated Vim plugin cruft
+- NeoVim's built-in LSP, Treesitter, and Lua configuration are more modern approaches
