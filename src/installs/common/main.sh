@@ -56,13 +56,13 @@ main() {
         "export NVM_DIR=\"${nvm_dir}\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && nvm alias default lts/*" \
         "Set Node.js LTS as default"
 
-    # Use the default version
-    nvm use default &> /dev/null
+    # Use the LTS version
+    nvm use lts/* &> /dev/null
 
     # Update npm to latest
     print_in_yellow "   Updating npm...\n\n"
     execute \
-        "export NVM_DIR=\"${nvm_dir}\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && nvm use default && npm install --global --silent npm@latest" \
+        "export NVM_DIR=\"${nvm_dir}\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && nvm use lts/* && npm install --global --silent npm@latest" \
         "Update npm to latest"
 
     # Phase 2.2: Install Oh My Bash
