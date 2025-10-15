@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# macOS Software Installation Script
-# Installs Homebrew and core packages for macOS
+# Debian Software Installation Script
+# Installs core packages for Debian-based systems
 
 main() {
 
@@ -13,37 +13,29 @@ main() {
     . "${script_dir}/../../utils/common/utils.sh"
     . "${script_dir}/../../utils/common/logging.sh"
     . "${script_dir}/../../utils/common/execution.sh"
-    . "${script_dir}/../../utils/macos/utils.sh"
+    . "${script_dir}/../../utils/debian/utils.sh"
 
-    # Phase 2.1: Install Homebrew
-    print_in_purple "\n   • Install Homebrew\n\n"
-    
-    install_homebrew
-    opt_out_of_homebrew_analytics
-    
-    # Update and upgrade Homebrew
-    print_in_yellow "   Updating Homebrew...\n\n"
-    brew_update
-    brew_upgrade
+    # Phase 2.1: Update package lists
+    print_in_purple "\n   • Update Package Lists\n\n"
+    update
 
     # Phase 2.2: Install Core Packages
     print_in_purple "\n   • Install Core Packages\n\n"
-    
+
     print_in_yellow "   Installing Git...\n\n"
-    brew_install "Git" "git"
-    
+    install_package "Git" "git"
+
     print_in_yellow "   Installing tmux...\n\n"
-    brew_install "tmux" "tmux"
-    brew_install "Pasteboard" "reattach-to-user-namespace"
-    
+    install_package "tmux" "tmux"
+
     print_in_yellow "   Installing NeoVim...\n\n"
     if ! command -v nvim &> /dev/null; then
-        brew_install "NeoVim" "neovim"
+        install_package "NeoVim" "neovim"
     else
         print_success "NeoVim is already installed"
     fi
 
-    print_in_green "\n   macOS installations complete\n\n"
+    print_in_green "\n   Debian installations complete\n\n"
 
 }
 
