@@ -372,28 +372,45 @@ main() {
 
     print_in_purple "\n • Install NVM and Node.js (Critical Dependency)\n\n"
 
-    # NVM directory
+    # NVM configuration (using official installer as documented)
     local nvm_dir="${NVM_DIR:-$HOME/.nvm}"
 
-    # Install NVM using official install script (handles all configuration automatically)
+    # Install NVM using official install script (recommended method from nvm.sh docs)
     if [ ! -d "$nvm_dir" ]; then
-        print_in_yellow "   Installing NVM via official installer...\n\n"
-        execute \
-            "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash" \
-            "Install NVM" || {
-            print_error "Failed to install NVM"
-            print_error "NVM is required to continue. Please install manually and re-run."
+        print_in_yellow "   Installing NVM using official installer...\n\n"
+
+        # Use curl or wget depending on what's available
+        if command -v curl &> /dev/null; then
+            execute \
+                "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash" \
+                "Install NVM" || {
+                print_error "Failed to install NVM"
+                print_error "NVM is required to continue. Please install manually and re-run."
+                exit 1
+            }
+        elif command -v wget &> /dev/null; then
+            execute \
+                "wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash" \
+                "Install NVM" || {
+                print_error "Failed to install NVM"
+                print_error "NVM is required to continue. Please install manually and re-run."
+                exit 1
+            }
+        else
+            print_error "Neither curl nor wget is available"
+            print_error "Please install curl or wget and re-run."
             exit 1
-        }
+        fi
     else
         print_success "NVM already installed"
     fi
 
-    # Source NVM in current shell
+    # Source NVM in current shell (the install script adds config to profile files,
+    # but we need to manually load it for the current script execution)
     export NVM_DIR="$nvm_dir"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-    # VALIDATE: Check if NVM is accessible
+    # VALIDATE: Check if NVM is accessible after sourcing
     if ! command -v nvm &> /dev/null && ! type nvm &> /dev/null; then
         print_error "NVM is not accessible after installation"
         print_error "This is a critical failure. Setup cannot continue."
@@ -411,6 +428,17 @@ main() {
         exit 1
     }
 
+    # Set Node.js LTS as default
+    execute \
+        "nvm alias default lts/*" \
+        "Set Node.js LTS as default" || {
+        print_error "Failed to set Node.js LTS as default"
+        exit 1
+    }
+
+    # Use the default version (activates it in current shell)
+    nvm use default &> /dev/null
+
     # VALIDATE: Check if Node is accessible
     if ! command -v node &> /dev/null; then
         print_error "Node.js is not accessible after installation"
@@ -420,21 +448,14 @@ main() {
     local node_version=$(node --version)
     print_success "Node.js is accessible (${node_version})"
 
-    # Set Node.js LTS as default
-    execute \
-        "nvm alias default lts/*" \
-        "Set Node.js LTS as default" || {
-        print_error "Failed to set Node.js LTS as default"
-        exit 1
-    }
-
-    # VALIDATE: Check if default alias was created
-    if ! nvm alias | grep -q "default"; then
-        print_error "Failed to create default alias for Node.js"
+    # VALIDATE: Check if npm is accessible
+    if ! command -v npm &> /dev/null; then
+        print_error "npm is not accessible after Node installation"
         print_error "This is a critical failure. Setup cannot continue."
         exit 1
     fi
-    print_success "Default alias set successfully"
+    local npm_version=$(npm --version)
+    print_success "npm is accessible (${npm_version})"
 
     # Update npm to latest
     print_in_yellow "   Updating npm...\n\n"
@@ -444,15 +465,6 @@ main() {
         print_error "Failed to update npm"
         exit 1
     }
-
-    # FINAL VALIDATION: Verify npm is still accessible after update
-    if ! command -v npm &> /dev/null; then
-        print_error "npm is not accessible after update"
-        print_error "This is a critical failure. Setup cannot continue."
-        exit 1
-    fi
-    local npm_version=$(npm --version)
-    print_success "npm updated successfully (${npm_version})"
 
     print_in_green "\n   ✓ NVM, Node.js, and npm installation complete\n\n"
 
