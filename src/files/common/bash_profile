@@ -9,6 +9,16 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
+# Auto-install Node.js if not available
+if command -v nvm &> /dev/null; then
+    if ! command -v node &> /dev/null; then
+        echo "Node.js not found. Installing Node.js 22..."
+        nvm install 22 &> /dev/null
+        nvm use 22 &> /dev/null
+        echo "Node.js $(node --version) installed and activated."
+    fi
+fi
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Load Oh My Bash

@@ -422,9 +422,8 @@ create_symlinks() {
     local skipQuestions=false
 
     # Files that Oh My Bash manages - we skip these
-    # Note: We DO include bash_profile because we manage NVM and OMB loading ourselves
+    # Note: We manage both bash_profile and bashrc ourselves to control NVM and OMB loading
     declare -a OMB_MANAGED_FILES=(
-        ".bashrc"
         "bash_prompt"
         "bash_autocompletion"
         "bash_colors"
