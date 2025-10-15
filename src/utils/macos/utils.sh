@@ -1,82 +1,7 @@
 #!/bin/bash
 
 # File to be sourced by other scripts
-# macOS-specific utilities: Xcode, Homebrew package management
-
-# Source common utilities
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. "${SCRIPT_DIR}/../common/utils.sh"
-. "${SCRIPT_DIR}/../common/logging.sh"
-. "${SCRIPT_DIR}/../common/prompt.sh"
-. "${SCRIPT_DIR}/../common/execution.sh"
-
-# ------------------------------------------------------------------------------
-# | Xcode Command Line Tools                                                   |
-# ------------------------------------------------------------------------------
-
-install_xcode_command_line_tools() {
-
-    # Check if Xcode Command Line Tools are already installed
-    if xcode-select -p &> /dev/null; then
-        print_success "Xcode Command Line Tools"
-        return 0
-    fi
-
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    # If not installed, trigger installation
-    print_in_yellow "\n   Xcode Command Line Tools are required but not installed.\n"
-    print_in_yellow "   A system dialog will appear.\n"
-    print_in_yellow "   Please click 'Install' and wait for the download to complete.\n\n"
-
-    # Trigger the installation dialog (suppress xcode-select's output since we show our own messages)
-    xcode-select --install &> /dev/null
-
-    # Give the dialog time to appear
-    sleep 2
-
-    # Wait for installation to complete
-    # Poll every 5 seconds until xcode-select -p succeeds
-    print_in_purple "   Waiting for Xcode Command Line Tools installation to complete...\n"
-    print_in_purple "   (This may take several minutes depending on your internet connection)\n\n"
-
-    local attempt=0
-    local max_attempts=360  # 30 minutes maximum (360 * 5 seconds)
-
-    until xcode-select -p &> /dev/null; do
-        attempt=$((attempt + 1))
-
-        if [ $attempt -gt $max_attempts ]; then
-            printf "\n"
-            print_error "Xcode Command Line Tools installation timed out"
-            print_error "Please install manually and re-run this script"
-            return 1
-        fi
-
-        # Show progress every minute (12 attempts = 60 seconds)
-        if [ $((attempt % 12)) -eq 0 ]; then
-            printf "   Still waiting... (%d minutes elapsed)\n" $((attempt / 12))
-        fi
-
-        sleep 5
-    done
-
-    printf "\n"
-
-    # Verify installation succeeded
-    if xcode-select -p &> /dev/null; then
-        print_success "Xcode Command Line Tools installed successfully"
-        return 0
-    else
-        print_error "Xcode Command Line Tools installation verification failed"
-        return 1
-    fi
-
-}
-
-# ------------------------------------------------------------------------------
-# | Homebrew Package Management                                                |
-# ------------------------------------------------------------------------------
+# macOS-specific utility functions for Homebrew and package management
 
 brew_install() {
 
@@ -154,5 +79,59 @@ brew_upgrade() {
     execute \
         "brew upgrade" \
         "Homebrew (upgrade)"
+
+}
+
+get_homebrew_git_config_file_path() {
+
+    local path=""
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if path="$(brew --repository 2> /dev/null)/.git/config"; then
+        printf "%s" "$path"
+        return 0
+    else
+        print_error "Get config file path"
+        return 1
+    fi
+
+}
+
+install_homebrew() {
+
+    if ! cmd_exists "brew"; then
+        print_in_yellow "   Installing Homebrew...\n\n"
+        execute \
+            "NONINTERACTIVE=1 /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"" \
+            "Install Homebrew"
+    else
+        print_success "Homebrew already installed"
+    fi
+
+}
+
+opt_out_of_homebrew_analytics() {
+
+    local path=""
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    # Try to get the path of the `Homebrew` git config file.
+
+    path="$(get_homebrew_git_config_file_path)" \
+        || return 1
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    # Opt-out of Homebrew's analytics.
+    # https://github.com/Homebrew/brew/blob/0c95c60511cc4d85d28f66b58d51d85f8186d941/share/doc/homebrew/Analytics.md#opting-out
+
+    if [ "$(git config --file="$path" --get homebrew.analyticsdisabled)" != "true" ]; then
+        git config --file="$path" --replace-all homebrew.analyticsdisabled true &> /dev/null
+        print_result $? "Opt-out of Homebrew analytics"
+    else
+        print_success "Already opted out of Homebrew analytics"
+    fi
 
 }
