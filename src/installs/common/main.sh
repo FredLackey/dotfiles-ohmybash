@@ -45,17 +45,11 @@ main() {
     export NVM_DIR="$nvm_dir"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-    # Install Node.js 22
+    # Install Node.js 22 and update npm
     print_in_yellow "   Installing Node.js 22...\n\n"
     execute \
-        "export NVM_DIR=\"${nvm_dir}\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && nvm install 22" \
-        "Install Node.js 22"
-
-    # Update npm to latest
-    print_in_yellow "   Updating npm...\n\n"
-    execute \
-        "export NVM_DIR=\"${nvm_dir}\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && npm install --global --silent npm@latest" \
-        "Update npm to latest"
+        "export NVM_DIR=\"${nvm_dir}\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && nvm install 22 && npm install --global --silent npm@latest" \
+        "Install Node.js 22 and update npm"
 
     # Phase 2.2: Install Oh My Bash
     print_in_purple "\n   • Install Oh My Bash\n\n"
