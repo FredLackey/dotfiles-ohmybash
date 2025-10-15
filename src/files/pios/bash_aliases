@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Raspberry Pi OS-Specific Bash Aliases
+# These aliases are specific to Raspberry Pi OS
+# Note: This file adds to aliases from ubuntu/bash_aliases (inherited via hierarchy)
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Raspberry Pi Hardware Information
+
+# Get CPU temperature
+alias pi-temp='vcgencmd measure_temp'
+
+# Get throttling status (undervoltage, frequency capping, etc.)
+alias pi-throttle='vcgencmd get_throttled'
+
+# Get Raspberry Pi model information
+alias pi-version='cat /proc/device-tree/model'

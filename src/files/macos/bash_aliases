@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# macOS-Specific Bash Aliases
+# These aliases are specific to macOS systems
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# System Commands
+
+# Lock screen (sleep system)
+alias afk="osascript -e 'tell application \"System Events\" to sleep'"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Homebrew Package Manager
+
+alias brewd="brew doctor"
+alias brewi="brew install"
+alias brewr="brew uninstall"
+alias brews="brew search"
+alias brewu="brew update --quiet && brew upgrade && brew cleanup"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# macOS System Maintenance
+
+# Clear DNS cache
+alias clear-dns-cache="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder"
+
+# Empty the trash, the main HDD and on all mounted volumes,
+# and clear Apple's system logs
+alias empty-trash="sudo rm -frv /Volumes/*/.Trashes; sudo rm -frv ~/.Trash; sudo rm -frv /private/var/log/asl/*.asl; sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'delete from LSQuarantineEvent'"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Finder Controls
+
+# Hide/Show desktop icons
+alias hide-desktop-icons="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+alias show-desktop-icons="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+
+# Hide/Show hidden files in Finder
+alias hide-hidden-files="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
+alias show-hidden-files="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Utilities
+
+# Open files/folders in GUI
+alias o="open"
+
+# Update macOS, Homebrew, and all packages
+alias u="sudo softwareupdate --install --all && brew update && brew upgrade && brew cleanup"
+
+# Get ISO 8601 timestamp in Pacific Time
+alias iso="TZ=America/Los_Angeles date -Iseconds"
+
+# Network information
+alias local-ip="ipconfig getifaddr en1"
+alias ports="lsof -i -P -n"
+
+# Development utilities
+alias code-all="find . -type d -depth 1 -exec code {} \;"
+alias packages="find ./ -type f -name \"package.json\" -exec stat -f \"%Sm %N\" -t \"%Y-%m-%d %H:%M:%S\" {} + | grep -v \"node_modules\" | sort -n"
