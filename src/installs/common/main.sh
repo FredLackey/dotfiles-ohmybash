@@ -2,9 +2,6 @@
 
 # Common Software Installation Script
 # Installs software packages that are universal across all operating systems
-#
-# NOTE: NVM and Node.js are now installed in Phase 0.9 of setup.sh
-# as critical dependencies before this phase runs.
 
 main() {
 
@@ -17,7 +14,58 @@ main() {
     . "${script_dir}/../../utils/common/logging.sh"
     . "${script_dir}/../../utils/common/execution.sh"
 
-    # Phase 2.1: Install Oh My Bash
+    # Phase 2.1: Install NVM and Node.js
+    # Following legacy pattern: profile files exist now, NVM installer can configure them
+    print_in_purple "\n   • Install NVM and Node.js\n\n"
+
+    local nvm_dir="${NVM_DIR:-$HOME/.nvm}"
+
+    # Install NVM using official install script
+    if [ ! -d "$nvm_dir" ]; then
+        print_in_yellow "   Installing NVM...\n\n"
+
+        # Use curl or wget depending on what's available
+        if command -v curl &> /dev/null; then
+            execute \
+                "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash" \
+                "Install NVM"
+        elif command -v wget &> /dev/null; then
+            execute \
+                "wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash" \
+                "Install NVM"
+        else
+            print_error "Neither curl nor wget is available"
+            exit 1
+        fi
+    else
+        print_success "NVM already installed"
+    fi
+
+    # Source NVM for current script
+    export NVM_DIR="$nvm_dir"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+    # Install Node.js LTS
+    print_in_yellow "   Installing Node.js LTS...\n\n"
+    execute \
+        "nvm install --lts" \
+        "Install Node.js LTS"
+
+    # Set Node.js LTS as default
+    execute \
+        "nvm alias default lts/*" \
+        "Set Node.js LTS as default"
+
+    # Use the default version
+    nvm use default &> /dev/null
+
+    # Update npm to latest
+    print_in_yellow "   Updating npm...\n\n"
+    execute \
+        "npm install --global --silent npm@latest" \
+        "Update npm to latest"
+
+    # Phase 2.2: Install Oh My Bash
     print_in_purple "\n   • Install Oh My Bash\n\n"
 
     if [ -d "$HOME/.oh-my-bash" ]; then
