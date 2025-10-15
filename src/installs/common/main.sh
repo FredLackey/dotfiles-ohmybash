@@ -45,24 +45,16 @@ main() {
     export NVM_DIR="$nvm_dir"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-    # Install Node.js LTS
-    print_in_yellow "   Installing Node.js LTS...\n\n"
+    # Install Node.js 22
+    print_in_yellow "   Installing Node.js 22...\n\n"
     execute \
-        "export NVM_DIR=\"${nvm_dir}\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && nvm install --lts" \
-        "Install Node.js LTS"
-
-    # Set Node.js LTS as default
-    execute \
-        "export NVM_DIR=\"${nvm_dir}\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && nvm alias default lts/*" \
-        "Set Node.js LTS as default"
-
-    # Use the LTS version
-    nvm use lts/* &> /dev/null
+        "export NVM_DIR=\"${nvm_dir}\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && nvm install 22" \
+        "Install Node.js 22"
 
     # Update npm to latest
     print_in_yellow "   Updating npm...\n\n"
     execute \
-        "export NVM_DIR=\"${nvm_dir}\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && nvm use lts/* && npm install --global --silent npm@latest" \
+        "export NVM_DIR=\"${nvm_dir}\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\" && npm install --global --silent npm@latest" \
         "Update npm to latest"
 
     # Phase 2.2: Install Oh My Bash
