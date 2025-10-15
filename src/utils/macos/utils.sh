@@ -105,8 +105,29 @@ install_homebrew() {
         execute \
             "NONINTERACTIVE=1 /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"" \
             "Install Homebrew"
+
+        # Add Homebrew to PATH immediately after installation
+        # Check for Apple Silicon (M1/M2/M3) vs Intel
+        if [[ -f /opt/homebrew/bin/brew ]]; then
+            # Apple Silicon Macs
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        elif [[ -f /usr/local/bin/brew ]]; then
+            # Intel Macs
+            eval "$(/usr/local/bin/brew shellenv)"
+        fi
+
+        print_result $? "Add Homebrew to PATH"
     else
         print_success "Homebrew already installed"
+
+        # Ensure brew is in PATH even if already installed
+        if ! cmd_exists "brew"; then
+            if [[ -f /opt/homebrew/bin/brew ]]; then
+                eval "$(/opt/homebrew/bin/brew shellenv)"
+            elif [[ -f /usr/local/bin/brew ]]; then
+                eval "$(/usr/local/bin/brew shellenv)"
+            fi
+        fi
     fi
 
 }
