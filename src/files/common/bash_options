@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Bash Options
+# Configure shell behavior using shopt and set commands
+# https://www.gnu.org/software/bash/manual/html_node/The-Shopt-Builtin.html
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Automatically correct directory name typos when using `cd`.
+
+shopt -s cdspell
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Append to the history file rather than overwriting it.
+
+shopt -s histappend
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Case-insensitive pattern matching when performing filename expansion.
+
+shopt -s nocaseglob
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Enable vi mode for command line editing (optional - comment out if you prefer emacs mode).
+
+# set -o vi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Load OS-specific options
+# This sources the OS-specific bash_options file if it exists
+
+# Determine OS and source appropriate file
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    [ -f "$HOME/.bash_options.macos" ] && source "$HOME/.bash_options.macos"
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    # Linux - check distribution
+    if [ -f /etc/lsb-release ] || [ -f /etc/debian_version ]; then
+        # Ubuntu/Debian-based
+        [ -f "$HOME/.bash_options.ubuntu" ] && source "$HOME/.bash_options.ubuntu"
+
+        # Check for Raspberry Pi
+        if [ -f /proc/device-tree/model ] && grep -q "Raspberry Pi" /proc/device-tree/model 2>/dev/null; then
+            [ -f "$HOME/.bash_options.pios" ] && source "$HOME/.bash_options.pios"
+        fi
+    fi
+fi

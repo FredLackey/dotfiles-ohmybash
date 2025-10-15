@@ -5,6 +5,14 @@
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+# Load common aliases first (from dotfiles repository)
+# This sources the universal aliases that work across all operating systems
+
+DOTFILES_DIR="$(cd "$(dirname "$(readlink "${BASH_SOURCE[0]}")")/.." && pwd)"
+[ -f "$DOTFILES_DIR/files/common/bash_aliases" ] && source "$DOTFILES_DIR/files/common/bash_aliases"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 # System Commands
 
 # Lock screen (GNOME desktop)

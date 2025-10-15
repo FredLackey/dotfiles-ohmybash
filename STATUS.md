@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2025-01-15
+**Last Updated:** 2025-01-15 (Phase 1 bash files created, pending testing)
 
 ## Overview
 
@@ -34,16 +34,46 @@ Rebuilding dotfiles system on Oh My Bash foundation. Ground-up rewrite with hier
 
 **Tested:** Implemented and integrated into setup flow
 
-## Phase 1: File System Setup ✅
+## Phase 1: File System Setup 🚧
 
-**Status:** Complete
+**Status:** In Progress - Bash Configuration Files Created, Pending Testing
 **File:** `src/setup.sh` (orchestration) + `src/utils/common/utils.sh` (functions)
 
+### Completed:
 - [x] Backup .bash* files (`backup_bash_files()`)
 - [x] Create symlinks (hierarchical) (`create_symlinks()`)
 - [x] Create .local configs (`create_bash_local()`, `create_gitconfig_local()`, `create_vimrc_local()`)
+- [x] Bash configuration files with hierarchical sourcing pattern
 
-**Tested:** Pending - needs files in `src/files/` structure to test symlink creation
+### Bash Configuration Files:
+
+**Common (base layer):**
+- `src/files/common/bash_aliases` - Universal aliases
+- `src/files/common/bash_exports` - Environment variables
+- `src/files/common/bash_functions` - Shell functions (includes `rm_safe()`)
+- `src/files/common/bash_options` - Shell options (shopt/set)
+- `src/files/common/bash_profile` - Orchestrates loading
+- `src/files/common/bashrc` - Sources bash_profile
+
+**OS-Specific (override/extend base):**
+- `src/files/macos/bash_aliases.macos` - macOS aliases (Homebrew, Finder, etc.)
+- `src/files/ubuntu/bash_aliases.ubuntu` - Ubuntu aliases (APT, GNOME, etc.)
+- `src/files/pios/bash_aliases.pios` - Raspberry Pi aliases (hardware commands)
+
+### Hierarchical Sourcing Pattern:
+
+Each common file sources its OS-specific counterpart if it exists:
+- `~/.bash_aliases` → sources `~/.bash_aliases.{macos|ubuntu|pios}`
+- `~/.bash_exports` → sources `~/.bash_exports.{macos|ubuntu|pios}`
+- `~/.bash_functions` → sources `~/.bash_functions.{macos|ubuntu|pios}`
+- `~/.bash_options` → sources `~/.bash_options.{macos|ubuntu|pios}`
+
+Raspberry Pi inherits Ubuntu base via sourcing chain:
+- `pios/bash_aliases.pios` → sources `ubuntu/bash_aliases.ubuntu` → sources `common/bash_aliases`
+
+**Note:** Oh My Bash manages `bash_prompt`, `bash_autocompletion`, and `bash_colors` - we skip these.
+
+**Tested:** Pending - awaiting user testing on target systems
 
 ## Phase 2: Software Installation ✅
 
@@ -127,4 +157,13 @@ Rebuilding dotfiles system on Oh My Bash foundation. Ground-up rewrite with hier
 
 ## Next Action
 
-Test Phase 0 on sandbox VM, then implement Phase 1.
+**Test Phase 1 bash configuration files** on target systems to verify:
+- Symlink creation works correctly (common + OS-specific with suffixes)
+- Hierarchical sourcing pattern loads files in correct order
+- Common aliases/exports/functions/options load first
+- OS-specific overrides/additions load second
+- Raspberry Pi properly inherits Ubuntu base
+
+After successful testing, proceed with:
+- Phase 3: System Preferences
+- Phase 4: Oh My Bash theme/plugin configuration

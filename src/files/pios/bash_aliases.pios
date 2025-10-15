@@ -2,7 +2,15 @@
 
 # Raspberry Pi OS-Specific Bash Aliases
 # These aliases are specific to Raspberry Pi OS
-# Note: This file adds to aliases from ubuntu/bash_aliases (inherited via hierarchy)
+# Note: This file inherits Ubuntu aliases, which in turn inherit common aliases
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Load Ubuntu aliases first (which loads common aliases)
+# Raspberry Pi OS is Debian-based, so we inherit Ubuntu aliases
+
+DOTFILES_DIR="$(cd "$(dirname "$(readlink "${BASH_SOURCE[0]}")")/.." && pwd)"
+[ -f "$DOTFILES_DIR/files/ubuntu/bash_aliases" ] && source "$DOTFILES_DIR/files/ubuntu/bash_aliases"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

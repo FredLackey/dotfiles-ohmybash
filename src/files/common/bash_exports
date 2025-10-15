@@ -105,3 +105,25 @@ fi
 # Make Python use UTF-8 encoding for output to stdin/stdout/stderr.
 
 export PYTHONIOENCODING="UTF-8"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Load OS-specific exports
+# This sources the OS-specific bash_exports file if it exists
+
+# Determine OS and source appropriate file
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    [ -f "$HOME/.bash_exports.macos" ] && source "$HOME/.bash_exports.macos"
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    # Linux - check distribution
+    if [ -f /etc/lsb-release ] || [ -f /etc/debian_version ]; then
+        # Ubuntu/Debian-based
+        [ -f "$HOME/.bash_exports.ubuntu" ] && source "$HOME/.bash_exports.ubuntu"
+
+        # Check for Raspberry Pi
+        if [ -f /proc/device-tree/model ] && grep -q "Raspberry Pi" /proc/device-tree/model 2>/dev/null; then
+            [ -f "$HOME/.bash_exports.pios" ] && source "$HOME/.bash_exports.pios"
+        fi
+    fi
+fi

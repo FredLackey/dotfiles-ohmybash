@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Universal Bash Functions
+# Custom shell functions that work across all operating systems
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Safe remove function - moves files to trash instead of permanent deletion
+# Required by the 'rm' alias override in bash_aliases
+
+rm_safe() {
+    # TODO: Implement safe delete functionality
+    # For now, use regular rm with confirmation
+    command rm -i "$@"
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Load OS-specific functions
+# This sources the OS-specific bash_functions file if it exists
+
+# Determine OS and source appropriate file
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    [ -f "$HOME/.bash_functions.macos" ] && source "$HOME/.bash_functions.macos"
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    # Linux - check distribution
+    if [ -f /etc/lsb-release ] || [ -f /etc/debian_version ]; then
+        # Ubuntu/Debian-based
+        [ -f "$HOME/.bash_functions.ubuntu" ] && source "$HOME/.bash_functions.ubuntu"
+
+        # Check for Raspberry Pi
+        if [ -f /proc/device-tree/model ] && grep -q "Raspberry Pi" /proc/device-tree/model 2>/dev/null; then
+            [ -f "$HOME/.bash_functions.pios" ] && source "$HOME/.bash_functions.pios"
+        fi
+    fi
+fi
