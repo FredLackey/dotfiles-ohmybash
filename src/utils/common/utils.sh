@@ -463,11 +463,19 @@ create_symlinks() {
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    # Build a map of files: target_path => most_specific_source_path
-    # Later levels (more specific) override earlier levels
-    declare -A file_map
+    # Build arrays to track files (Bash 3.2 compatible - no associative arrays)
+    # Strategy: Process hierarchy in reverse (most specific first)
+    # Only create symlinks for target files we haven't seen yet
+    local -a processed_targets=()
 
-    for level in "${hierarchy[@]}"; do
+    # Reverse the hierarchy to process most specific first
+    local -a reversed_hierarchy=()
+    for (( idx=${#hierarchy[@]}-1 ; idx>=0 ; idx-- )); do
+        reversed_hierarchy+=("${hierarchy[idx]}")
+    done
+
+    # Process each level from most specific to least specific
+    for level in "${reversed_hierarchy[@]}"; do
         local level_dir="${files_base_dir}/${level}"
 
         # Skip if directory doesn't exist
@@ -498,54 +506,59 @@ create_symlinks() {
                 continue
             fi
 
-            # Add/update the map with most specific version
-            file_map["$targetFile"]="$sourceFile"
+            # Check if we've already processed this target file
+            local already_processed=false
+            for processed in "${processed_targets[@]}"; do
+                if [ "$processed" == "$targetFile" ]; then
+                    already_processed=true
+                    break
+                fi
+            done
 
-        done < <(find "$level_dir" -type f -print0)
+            if $already_processed; then
+                continue
+            fi
 
-    done
+            # Mark this target as processed
+            processed_targets+=("$targetFile")
 
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            # Create target directory if needed
+            local targetDir="$(dirname "$targetFile")"
+            if [ ! -d "$targetDir" ]; then
+                mkdir -p "$targetDir"
+            fi
 
-    # Now create symlinks ONLY for the most specific version of each file
-    for targetFile in "${!file_map[@]}"; do
-        local sourceFile="${file_map[$targetFile]}"
+            # Create or update symlink
+            if [ ! -e "$targetFile" ] || $skipQuestions; then
 
-        # Create target directory if needed
-        local targetDir="$(dirname "$targetFile")"
-        if [ ! -d "$targetDir" ]; then
-            mkdir -p "$targetDir"
-        fi
+                execute \
+                    "ln -fs $sourceFile $targetFile" \
+                    "$targetFile → $sourceFile"
 
-        # Create or update symlink
-        if [ ! -e "$targetFile" ] || $skipQuestions; then
+            elif [ "$(readlink "$targetFile")" == "$sourceFile" ]; then
+                print_success "$targetFile → $sourceFile"
+            else
 
-            execute \
-                "ln -fs $sourceFile $targetFile" \
-                "$targetFile → $sourceFile"
+                if ! $skipQuestions; then
 
-        elif [ "$(readlink "$targetFile")" == "$sourceFile" ]; then
-            print_success "$targetFile → $sourceFile"
-        else
+                    ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
+                    if answer_is_yes; then
 
-            if ! $skipQuestions; then
+                        rm -rf "$targetFile"
 
-                ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
-                if answer_is_yes; then
+                        execute \
+                            "ln -fs $sourceFile $targetFile" \
+                            "$targetFile → $sourceFile"
 
-                    rm -rf "$targetFile"
+                    else
+                        print_error "$targetFile → $sourceFile"
+                    fi
 
-                    execute \
-                        "ln -fs $sourceFile $targetFile" \
-                        "$targetFile → $sourceFile"
-
-                else
-                    print_error "$targetFile → $sourceFile"
                 fi
 
             fi
 
-        fi
+        done < <(find "$level_dir" -type f -print0)
 
     done
 
