@@ -339,7 +339,7 @@ main() {
 
     print_in_purple "\n • Install critical OS prerequisites\n\n"
 
-    if [ "$os_name" == "macos" ]; then
+    if [[ "$os_name" == macos-* ]]; then
         # macOS: Xcode Command Line Tools (required for git, make, gcc, etc.)
         print_in_yellow "   Installing macOS prerequisites...\n\n"
         install_xcode_command_line_tools || {
@@ -402,8 +402,10 @@ main() {
     # Build installation hierarchy
     local -a install_hierarchy=("common")
 
-    if [ "$os_name" == "macos" ]; then
+    if [[ "$os_name" == macos-* ]]; then
+        # macOS with version: macos-15
         install_hierarchy+=("macos")
+        install_hierarchy+=("$os_name")
     elif [ "$os_name" == "raspberry-pi-os" ]; then
         install_hierarchy+=("pios")
     else
