@@ -55,7 +55,11 @@ get_os_name() {
     os="$(get_os)"
 
     if [ "$os" == "macos" ]; then
-        version="macos"
+        # Get macOS major version (15.x.x -> 15)
+        local macos_version="$(sw_vers -productVersion)"
+        local macos_parts=(`echo $macos_version | tr '.' ' '`)
+        local macos_major=${macos_parts[0]}
+        version="macos-$macos_major"
     elif [ -e "/etc/os-release" ]; then
         id="$(. /etc/os-release; printf "%s" "$ID")"
 
@@ -440,8 +444,10 @@ create_symlinks() {
     # Build hierarchy path array based on OS (ordered from general to specific)
     local -a hierarchy=("common")
 
-    if [ "$os_name" == "macos" ]; then
+    if [[ "$os_name" == macos-* ]]; then
+        # macOS with version: macos-15
         hierarchy+=("macos")
+        hierarchy+=("$os_name")
     elif [ "$os_name" == "raspberry-pi-os" ]; then
         hierarchy+=("pios")
     else

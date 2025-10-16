@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# macOS 15 (Sequoia) Bash Functions
+# Version-specific functions for macOS 15
+
+# Get the directory where this file actually lives (resolves symlinks)
+BASH_FUNCTIONS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source parent macos bash_functions
+if [ -f "${BASH_FUNCTIONS_DIR}/../macos/bash_functions" ]; then
+    source "${BASH_FUNCTIONS_DIR}/../macos/bash_functions"
+fi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# macOS 15-specific functions would go here
+# Currently no version-specific overrides needed
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

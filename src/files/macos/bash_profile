@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# macOS Bash Profile
+# macOS-specific configurations for bash profile
+
+# Get the directory where this file actually lives (resolves symlinks)
+BASH_PROFILE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source parent common bash_profile
+if [ -f "${BASH_PROFILE_DIR}/../common/bash_profile" ]; then
+    source "${BASH_PROFILE_DIR}/../common/bash_profile"
+fi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# macOS-specific bash profile configurations would go here
+# Currently no OS-specific overrides needed
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

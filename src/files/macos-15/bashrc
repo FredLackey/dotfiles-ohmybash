@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# macOS 15 (Sequoia) Bashrc
+# Version-specific bashrc configurations for macOS 15
+
+# Get the directory where this file actually lives (resolves symlinks)
+BASHRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source parent macos bashrc
+if [ -f "${BASHRC_DIR}/../macos/bashrc" ]; then
+    source "${BASHRC_DIR}/../macos/bashrc"
+fi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# macOS 15-specific bashrc configurations would go here
+# Currently no version-specific overrides needed
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

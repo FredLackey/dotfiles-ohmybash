@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# macOS Bash Options
+# macOS-specific shell options
+
+# Get the directory where this file actually lives (resolves symlinks)
+BASH_OPTIONS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source parent common bash_options
+if [ -f "${BASH_OPTIONS_DIR}/../common/bash_options" ]; then
+    source "${BASH_OPTIONS_DIR}/../common/bash_options"
+fi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# macOS-specific options would go here
+# Currently no OS-specific overrides needed
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

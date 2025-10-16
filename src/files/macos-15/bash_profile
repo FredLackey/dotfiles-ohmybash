@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# macOS 15 (Sequoia) Bash Profile
+# Version-specific configurations for macOS 15
+
+# Get the directory where this file actually lives (resolves symlinks)
+BASH_PROFILE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source parent macos bash_profile
+if [ -f "${BASH_PROFILE_DIR}/../macos/bash_profile" ]; then
+    source "${BASH_PROFILE_DIR}/../macos/bash_profile"
+fi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# macOS 15-specific bash profile configurations would go here
+# Currently no version-specific overrides needed
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

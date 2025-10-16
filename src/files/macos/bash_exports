@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# macOS Bash Exports
+# macOS-specific environment variable exports
+
+# Get the directory where this file actually lives (resolves symlinks)
+BASH_EXPORTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source parent common bash_exports
+if [ -f "${BASH_EXPORTS_DIR}/../common/bash_exports" ]; then
+    source "${BASH_EXPORTS_DIR}/../common/bash_exports"
+fi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# macOS-specific exports would go here
+# Currently no OS-specific overrides needed
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# macOS Bashrc
+# macOS-specific bashrc configurations
+
+# Get the directory where this file actually lives (resolves symlinks)
+BASHRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source parent common bashrc
+if [ -f "${BASHRC_DIR}/../common/bashrc" ]; then
+    source "${BASHRC_DIR}/../common/bashrc"
+fi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# macOS-specific bashrc configurations would go here
+# Currently no OS-specific overrides needed
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

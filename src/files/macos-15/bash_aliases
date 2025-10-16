@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# macOS 15 (Sequoia) Bash Aliases
+# Version-specific aliases for macOS 15
+
+# Get the directory where this file actually lives (resolves symlinks)
+BASH_ALIASES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source parent macos bash_aliases
+if [ -f "${BASH_ALIASES_DIR}/../macos/bash_aliases" ]; then
+    source "${BASH_ALIASES_DIR}/../macos/bash_aliases"
+fi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# macOS 15-specific aliases would go here
+# Currently no version-specific overrides needed
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

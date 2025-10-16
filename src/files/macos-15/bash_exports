@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# macOS 15 (Sequoia) Bash Exports
+# Version-specific environment variable exports for macOS 15
+
+# Get the directory where this file actually lives (resolves symlinks)
+BASH_EXPORTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source parent macos bash_exports
+if [ -f "${BASH_EXPORTS_DIR}/../macos/bash_exports" ]; then
+    source "${BASH_EXPORTS_DIR}/../macos/bash_exports"
+fi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# macOS 15-specific exports would go here
+# Currently no version-specific overrides needed
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
