@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# macOS 16 Bashrc
-# Version-specific bashrc configurations for macOS 16
+# macOS 15 (Sequoia) Bashrc
+# Version-specific bashrc configurations for macOS 15
 
 # Get the directory where this file actually lives (resolves symlinks)
 BASHRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -13,7 +13,7 @@ fi
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# macOS 16-specific bashrc configurations would go here
+# macOS 15-specific bashrc configurations would go here
 # Currently no version-specific overrides needed
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

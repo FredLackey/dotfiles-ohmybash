@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# macOS 16 Bash Options
-# Version-specific shell options for macOS 16
+# macOS 15 (Sequoia) Bash Options
+# Version-specific shell options for macOS 15
 
 # Get the directory where this file actually lives (resolves symlinks)
 BASH_OPTIONS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -13,7 +13,7 @@ fi
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# macOS 16-specific options would go here
+# macOS 15-specific options would go here
 # Currently no version-specific overrides needed
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
