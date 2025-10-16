@@ -1,0 +1,753 @@
+#!/bin/bash
+
+# Ubuntu Bash Functions
+# Functions specific to Ubuntu/Debian-based Linux systems
+
+# Source parent debian functions first
+if [ -f "${HOME}/.config/bash/debian/bash_functions" ]; then
+    source "${HOME}/.config/bash/debian/bash_functions"
+fi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Back up the ~/Source directory using rsync.
+#
+# Usage example:
+#
+#   backup-source /path/to/backups/
+
+backup-source(){
+    backupdir="$*$(date +"%Y%m%d%H%M%S")/"
+    backupcmd="rsync -arv --progress --no-links --exclude={.Trash,.android,.atom,.bash_sessions,.cache,.cups,.dropbox,.git,.next,.npm,.nvm,.viminfo,bower_components,node_modules,.tmp,.idea,.DS_Store,.terraform} ~/Source $backupdir"
+    mkdir -p "$backupdir"
+    eval "$backupcmd"
+    cd "$backupdir"
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Back up various user directories using rsync.
+#
+# Usage example:
+#
+#   backup-all /path/to/backups/
+
+backup-all(){
+
+    excludes=".terraform,.android,.atom,.bash_sessions,bower_components,.cache,.cups,.dropbox,.DS_Store,.git,_gsdata_,.idea,node_modules,.next,.npm,.nvm,\$RECYCLE.BIN,System\ Volume\ Information,.TemporaryItems,.Trash,.Trashes,.tmp,.viminfo"
+
+    backupdir="$*"
+    backupcmd="rsync -arv --progress --no-links --exclude={$excludes} ~/Downloads $backupdir"
+    eval "$backupcmd"
+
+    backupdir="$*$(date +"%Y%m%d%H%M%S")/"
+    backupcmd="rsync -arv --progress --no-links --exclude={$excludes} ~/Backups ~/Desktop ~/Documents ~/Microsoft ~/Movies ~/Music ~/Pictures ~/Public ~/Source ~/Templates ~/Temporary ~/Videos $backupdir"
+    mkdir -p "$backupdir"
+    eval "$backupcmd"
+
+    cd "$backupdir"
+    ls -la
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Copy files from a source to a target directory, comparing sizes (using rsync or robocopy).
+# Skips files if they exist in the target with the same size.
+#
+# Usage example:
+#
+#   get-folder /path/to/source/ /path/to/target/
+
+get-folder() {
+    # Ensure source and target paths end with a forward slash
+    source="${1%/}/"
+    target="${2%/}/"
+
+    # Check if rsync command exists
+    if command -v rsync &> /dev/null; then
+        # Use rsync if available
+        for file in "$source"*; do
+            filename=$(basename "$file")
+            if [ -f "$target$filename" ]; then
+                # Check if file size matches
+                source_size=$(stat -c %s "$file")
+                target_size=$(stat -c %s "$target$filename")
+                if [ "$source_size" -eq "$target_size" ]; then
+                    echo "Skipping $filename as it already exists and has the same size."
+                else
+                    rsync -avP "$file" "$target"
+                fi
+            else
+                rsync -avP "$file" "$target"
+            fi
+        done
+    # Check if robocopy command exists (assuming it's run from Git Bash on Windows)
+    elif command -v robocopy &> /dev/null; then
+        # Use robocopy equivalent syntax
+        robocopy "$source" "$target" /E /Z /W:1 /R:3
+    else
+        echo "Error: Neither rsync nor robocopy command found."
+        return 1
+    fi
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Scan the local network for active IPs using nmap.
+#
+# Usage examples:
+#
+#   ips                 # Scan 192.168.1.0/24 with sudo
+#   ips 10.0.0.0 16     # Scan 10.0.0.0/16 with sudo
+#   ips ip-only         # Scan default network, show only IPs
+#   ips no-sudo       # Scan default network without sudo
+#   ips 192.168.1.0 24 ip-only no-sudo # Combine options
+
+ips(){
+    local usage="ips [%NETWORK_BASE_IP%] [%BIT_DEPTH%] [ip-only | no-sudo]"$'\n'"Default IP: 192.168.1.0"$'\n'"Default Mask: 24"
+    local addr="$1";
+    local mask="$2";
+    local prefix="";
+    local suffix="";
+
+    # Ensure nmap is installed
+    if ! cmd_exists "nmap"; then
+        printf "nmap is required, please install it!\n"
+        exit 1
+    fi
+
+    # display help if needed
+    if [[ "$@" =~ "help" ]]; then
+      echo "$usage";
+      return 0;
+    fi
+
+    # filter out details if only ips are needed
+    if [[ "$@" =~ "ip-only" ]]; then
+      suffix=" | grep report | awk '{print \$5}'";
+    fi
+
+    # remove sudo if is to be run without it
+    if [[ "$@" =~ "no-sudo" ]]; then
+      prefix="";
+    else
+      prefix="sudo ";
+    fi
+
+    # ensure the subnet mask is between 4 and 32 bits (default to 24)
+    if [[ "$mask" =~ ^[0-9]+$ ]] && [ "$mask" -ge 4 -a "$mask" -le 30 ]; then
+      mask="$mask";
+    else
+      echo "Invalid mask supplied.  Defaulting to 24 bits."
+      mask="24";
+    fi
+
+    # proceed if the first value is a valid IP address
+    if [[ ! $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+      echo "Invalid IP address supplied.  Defaulting to 192.168.1.0."
+      addr="192.168.1.0";
+    fi
+
+    eval "${prefix}nmap $addr/$mask -n -sP${suffix}"
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Convert text from selection to speech using festival.
+# (Requires xsel and festival to be installed)
+#
+# Usage example: Select text, then run:
+#
+#   talk
+
+talk(){
+    eval "xsel | festival --tts --pipe"
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Compare files in the current directory with another, removing the smaller version of each pair.
+#
+# Usage example:
+#
+#   remove_smaller_files /path/to/other/directory
+
+remove_smaller_files(){
+    LEFT_DIR="$PWD"
+    RIGHT_DIR="$*"
+    echo "LEFT : $LEFT_DIR"
+    echo "RIGHT: $RIGHT_DIR"
+    files="$(find -L "$LEFT_DIR" -type f)"
+    echo "$files" | while read file; do
+        FILE_NAME=${file#$LEFT_DIR}
+        LEFT_FILE="$file"
+        RIGHT_FILE="$RIGHT_DIR""$FILE_NAME"
+        #echo "----------"
+        #echo "Left File : $LEFT_FILE"
+        #echo "Right File: $RIGHT_FILE"
+        if [ -f "$LEFT_FILE" ]; then
+            if [ -f "$RIGHT_FILE" ]; then
+                LEFT_SIZE=( $( ls -Lon "$LEFT_FILE" ) )
+                LEFT_BYTES=${LEFT_SIZE[3]}
+                RIGHT_SIZE=( $( ls -Lon "$RIGHT_FILE" ) )
+                RIGHT_BYTES=${RIGHT_SIZE[3]}
+                #echo "----------"
+                #echo "LEFT_SIZE: $LEFT_SIZE"
+                #echo "LEFT_BYTES: $LEFT_BYTES"
+                #echo "RIGHT_SIZE: $RIGHT_SIZE"
+                #echo "RIGHT_BYTES: $RIGHT_BYTES"
+                if [ "$LEFT_BYTES" -gt "$RIGHT_BYTES" ]; then
+                    echo "REMOVED: $RIGHT_FILE"
+                    eval "rm \"$RIGHT_BYTES\""
+                elif [ "$RIGHT_BYTES" -gt "$LEFT_BYTES" ]; then
+                    echo "REMOVED: $LEFT_FILE"
+                    eval "rm \"$LEFT_FILE\""
+                else
+                    echo "SKIPPED: $FILE_NAME (same size)"
+                fi
+            fi
+        fi
+    done
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Resize image.
+#
+# Create a new image based on the specified image resized by the
+# specified amount.
+#
+# $1: Path to the original image.
+# $2: Resize value (default is 50%).
+#     See also: https://imagemagick.org/script/command-line-processing.php#geometry
+#
+# Usage examples:
+#
+#   * resize-image ./path/to/image.jpg 30%
+#   * resize-image ./path/to/image.jpg 1000x1000!
+
+resize-image() {
+
+    # Check if ImageMagick's convert command-line tool is installed.
+
+    if ! command -v "convert" $> /dev/null; then
+        printf "ImageMagick's 'convert' command-line tool is not installed!"
+        exit
+    fi
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    declare path="$(dirname "$1")"
+    declare fileName="$(basename "$1")"
+    declare geometry="${2:-50%}"
+
+    convert \
+        "$1" \
+        -colorspace RGB \
+        +sigmoidal-contrast 11.6933 \
+        -define filter:filter=Sinc \
+        -define filter:window=Jinc \
+        -define filter:lobes=3 \
+        -sigmoidal-contrast 11.6933 \
+        -colorspace sRGB \
+        -background transparent \
+        -gravity center \
+        -resize "$geometry" \
+        +append \
+        "$path/_$fileName" \
+    && printf "* %s (%s)\n" \
+            "$path/_$fileName" \
+            "$geometry"
+
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Initialize nginx configuration from template files.
+#
+# Usage examples:
+#
+#   nginx-init -d example.com -h http://127.0.0.1:3000 -f example.conf
+#   nginx-init --api -d api.example.com -h http://127.0.0.1:8080 -f api.conf --link
+
+nginx-init() {
+    local usage="nginx-init [OPTIONS]
+
+OPTIONS:
+    -a, --api       Use nginx-docker-host-api.conf template instead of nginx-docker-host.conf
+    -d, --domain    Domain name for server_name directive (can be used multiple times) (required)
+    -h, --host      Upstream URL for proxy_pass directive (required)
+    -f, --file      Output filename in /etc/nginx/sites-available (must end with .conf) (required)
+    -l, --link      Create symbolic link in /etc/nginx/sites-enabled
+
+EXAMPLES:
+    nginx-init -d example.com -h http://127.0.0.1:3000 -f example.conf
+    nginx-init -d example.com -d www.example.com -h http://127.0.0.1:3000 -f example.conf
+    nginx-init --api -d api.example.com -h http://127.0.0.1:8080 -f api.conf --link
+
+NOTE: This function will prompt for sudo authentication when writing to /etc/nginx/"
+
+    local use_api=false
+    local domains=()
+    local host=""
+    local filename=""
+    local create_link=false
+    local script_dir
+    local template_file
+    local sites_available="/etc/nginx/sites-available"
+    local sites_enabled="/etc/nginx/sites-enabled"
+
+    # Check if we have sudo access
+    echo "This function requires sudo access to write to /etc/nginx/"
+
+    # Try passwordless sudo first
+    if sudo -n true 2>/dev/null; then
+        echo "Using passwordless sudo"
+    else
+        # Fall back to regular sudo (will prompt for password if needed)
+        echo "Authenticating with sudo..."
+        if ! sudo -v; then
+            echo "Error: sudo authentication failed"
+            return 1
+        fi
+    fi
+
+        # Get the directory where this script is actually located (following symlinks)
+    local source_file="${BASH_SOURCE[0]}"
+    while [[ -L "$source_file" ]]; do
+        local link_target="$(readlink "$source_file")"
+        if [[ "$link_target" == /* ]]; then
+            source_file="$link_target"
+        else
+            source_file="$(cd "$(dirname "$source_file")" && pwd)/$link_target"
+        fi
+    done
+    script_dir="$(cd "$(dirname "$source_file")" && pwd)"
+
+    # Parse command line arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -a|--api)
+                use_api=true
+                shift
+                ;;
+            -d|--domain)
+                domains+=("$2")
+                shift 2
+                ;;
+            -h|--host)
+                host="$2"
+                shift 2
+                ;;
+            -f|--file)
+                filename="$2"
+                shift 2
+                ;;
+            -l|--link)
+                create_link=true
+                shift
+                ;;
+            --help)
+                echo "$usage"
+                return 0
+                ;;
+            *)
+                echo "Unknown option: $1"
+                echo "$usage"
+                return 1
+                ;;
+        esac
+    done
+
+    # Show usage if no arguments provided
+    if [[ $# -eq 0 && ${#domains[@]} -eq 0 && -z "$host" && -z "$filename" ]]; then
+        echo "$usage"
+        return 0
+    fi
+
+    # Validate required arguments
+    if [[ ${#domains[@]} -eq 0 ]]; then
+        echo "Error: At least one domain is required (-d or --domain)"
+        echo "$usage"
+        return 1
+    fi
+
+    if [[ -z "$host" ]]; then
+        echo "Error: Host URL is required (-h or --host)"
+        echo "$usage"
+        return 1
+    fi
+
+    if [[ -z "$filename" ]]; then
+        echo "Error: Filename is required (-f or --file)"
+        echo "$usage"
+        return 1
+    fi
+
+    # Validate filename ends with .conf
+    if [[ ! "$filename" =~ \.conf$ ]]; then
+        echo "Error: Filename must end with .conf"
+        return 1
+    fi
+
+    # Select template file
+    if [[ "$use_api" == true ]]; then
+        template_file="$script_dir/../../templates/nginx-docker-host-api.conf"
+    else
+        template_file="$script_dir/../../templates/nginx-docker-host.conf"
+    fi
+
+    # Check if template file exists
+    if [[ ! -f "$template_file" ]]; then
+        echo "Error: Template file not found: $template_file"
+        return 1
+    fi
+
+    # Check if sites-available directory exists
+    if [[ ! -d "$sites_available" ]]; then
+        echo "Error: Directory $sites_available does not exist"
+        return 1
+    fi
+
+    # Create output file path
+    local output_file="$sites_available/$filename"
+
+    # Check if output file already exists
+    if [[ -f "$output_file" ]]; then
+        echo "Warning: File $output_file already exists and will be overwritten"
+    fi
+
+    # Join domains into a single string for server_name directive
+    local domain_string
+    domain_string=$(printf "%s " "${domains[@]}")
+    domain_string="${domain_string% }"  # Remove trailing space
+
+    # Copy template and replace tokens
+    echo "Creating nginx configuration..."
+    echo "Template: $(basename "$template_file")"
+    echo "Domains: $domain_string"
+    echo "Host: $host"
+    echo "Output: $output_file"
+
+    # Perform token replacement and write to output file using sudo
+    sed -e "s|%DOMAINS%|$domain_string|g" \
+        -e "s|%HOST_URL%|$host|g" \
+        "$template_file" | sudo tee "$output_file" > /dev/null
+
+    if [[ $? -eq 0 ]]; then
+        echo "✓ Configuration file created successfully"
+    else
+        echo "✗ Failed to create configuration file"
+        return 1
+    fi
+
+    # Create symbolic link if requested
+    if [[ "$create_link" == true ]]; then
+        if [[ ! -d "$sites_enabled" ]]; then
+            echo "Error: Directory $sites_enabled does not exist"
+            return 1
+        fi
+
+        local link_path="$sites_enabled/$filename"
+
+        # Remove existing link if it exists
+        if [[ -L "$link_path" ]]; then
+            sudo rm "$link_path"
+            echo "Removed existing symbolic link"
+        fi
+
+        # Create new symbolic link
+        sudo ln -s "$output_file" "$link_path"
+        if [[ $? -eq 0 ]]; then
+            echo "✓ Symbolic link created: $link_path"
+        else
+            echo "✗ Failed to create symbolic link"
+            return 1
+        fi
+    fi
+
+    echo "Done!"
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Install SSL certificates using certbot for nginx.
+#
+# Usage examples:
+#
+#   certbot-init -d example.com -e admin@example.com
+#   certbot-init -d example.com -d www.example.com -e admin@example.com
+
+certbot-init() {
+    local usage="certbot-init [OPTIONS]
+
+OPTIONS:
+    -d, --domain    Domain name for SSL certificate (can be used multiple times) (required)
+    -e, --email     Email address for Let's Encrypt registration (required)
+
+EXAMPLES:
+    certbot-init -d example.com -e admin@example.com
+    certbot-init -d example.com -d www.example.com -e admin@example.com
+    certbot-init -d api.example.com -d www.api.example.com -e webmaster@example.com
+
+NOTE: This function will install certbot if not present and requires sudo access"
+
+    local domains=()
+    local email=""
+
+    # Show usage if no arguments provided
+    if [[ $# -eq 0 ]]; then
+        echo "$usage"
+        return 0
+    fi
+
+    # Parse command line arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -d|--domain)
+                if [[ -z "$2" || "$2" == -* ]]; then
+                    echo "Error: Domain value required after -d/--domain"
+                    echo "$usage"
+                    return 1
+                fi
+                domains+=("$2")
+                shift 2
+                ;;
+            -e|--email)
+                if [[ -z "$2" || "$2" == -* ]]; then
+                    echo "Error: Email value required after -e/--email"
+                    echo "$usage"
+                    return 1
+                fi
+                email="$2"
+                shift 2
+                ;;
+            --help)
+                echo "$usage"
+                return 0
+                ;;
+            *)
+                echo "Unknown option: $1"
+                echo "$usage"
+                return 1
+                ;;
+        esac
+    done
+
+    # Validate required arguments
+    if [[ ${#domains[@]} -eq 0 ]]; then
+        echo "Error: At least one domain is required (-d or --domain)"
+        echo "$usage"
+        return 1
+    fi
+
+    if [[ -z "$email" ]]; then
+        echo "Error: Email address is required (-e or --email)"
+        echo "$usage"
+        return 1
+    fi
+
+    # Validate email format (basic check)
+    if [[ ! "$email" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
+        echo "Error: Invalid email format: $email"
+        return 1
+    fi
+
+    # Check if we have sudo access
+    echo "This function requires sudo access to install certbot and configure SSL"
+
+    # Try passwordless sudo first
+    if sudo -n true 2>/dev/null; then
+        echo "Using passwordless sudo"
+    else
+        # Fall back to regular sudo (will prompt for password if needed)
+        echo "Authenticating with sudo..."
+        if ! sudo -v; then
+            echo "Error: sudo authentication failed"
+            return 1
+        fi
+    fi
+
+    # Install certbot if not already installed
+    if ! command -v certbot &> /dev/null; then
+        echo "Installing certbot..."
+
+        # Detect the OS and install accordingly
+        if [[ -f /etc/debian_version ]]; then
+            # Debian/Ubuntu
+            sudo apt update
+            sudo apt install -y certbot python3-certbot-nginx
+        elif [[ -f /etc/redhat-release ]]; then
+            # CentOS/RHEL/Fedora
+            if command -v dnf &> /dev/null; then
+                sudo dnf install -y certbot python3-certbot-nginx
+            elif command -v yum &> /dev/null; then
+                sudo yum install -y certbot python3-certbot-nginx
+            else
+                echo "Error: Unable to detect package manager for Red Hat-based system"
+                return 1
+            fi
+        else
+            echo "Error: Unsupported operating system for automatic certbot installation"
+            echo "Please install certbot manually and run this function again"
+            return 1
+        fi
+
+        if [[ $? -eq 0 ]]; then
+            echo "✓ Certbot installed successfully"
+        else
+            echo "✗ Failed to install certbot"
+            return 1
+        fi
+    else
+        echo "✓ Certbot is already installed"
+    fi
+
+    # Build domain arguments for certbot
+    local domain_args=""
+    for domain in "${domains[@]}"; do
+        domain_args="$domain_args -d $domain"
+    done
+
+    # Display what we're about to do
+    echo ""
+    echo "Requesting SSL certificate for:"
+    printf "  Domains: %s\n" "${domains[*]}"
+    echo "  Email: $email"
+    echo ""
+
+    # Run certbot command
+    echo "Running certbot..."
+    local certbot_cmd="sudo certbot --nginx --agree-tos --no-eff-email --email $email$domain_args"
+
+    echo "Executing: $certbot_cmd"
+    eval "$certbot_cmd"
+
+    if [[ $? -eq 0 ]]; then
+        echo ""
+        echo "✓ SSL certificate(s) installed successfully!"
+        echo ""
+        echo "Your nginx configuration has been automatically updated."
+        echo "You can test your SSL configuration at: https://www.ssllabs.com/ssltest/"
+        echo ""
+        echo "To renew certificates automatically, consider adding this to your crontab:"
+        echo "0 12 * * * /usr/bin/certbot renew --quiet"
+    else
+        echo ""
+        echo "✗ Failed to install SSL certificate(s)"
+        echo "Please check the error messages above and try again"
+        return 1
+    fi
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Add certbot renewal cron job if it doesn't already exist.
+#
+# Usage example:
+#
+#   certbot-crontab-init
+
+certbot-crontab-init() {
+    local cron_line="0 12 * * * /usr/bin/certbot renew --quiet"
+    local temp_crontab
+    local cron_service=""
+
+    # Determine cron service name based on OS
+    if [[ -f /etc/debian_version ]]; then
+        cron_service="cron"
+    elif [[ -f /etc/redhat-release ]]; then
+        cron_service="crond"
+    else
+        echo "Warning: Unable to detect OS type, assuming 'cron' service name"
+        cron_service="cron"
+    fi
+
+    # Check if cron service is running
+    echo "Checking cron service status..."
+    if ! systemctl is-active --quiet "$cron_service"; then
+        echo "⚠ Cron service ($cron_service) is not running"
+        echo "Attempting to start and enable cron service..."
+
+        # Try passwordless sudo first
+        if sudo -n true 2>/dev/null; then
+            echo "Using passwordless sudo"
+        else
+            echo "This requires sudo access to manage the cron service"
+            if ! sudo -v; then
+                echo "Error: sudo authentication failed"
+                return 1
+            fi
+        fi
+
+        # Start and enable the cron service
+        if sudo systemctl start "$cron_service" && sudo systemctl enable "$cron_service"; then
+            echo "✓ Cron service started and enabled successfully"
+        else
+            echo "✗ Failed to start cron service"
+            echo "Please start the cron service manually: sudo systemctl start $cron_service"
+            return 1
+        fi
+    else
+        echo "✓ Cron service ($cron_service) is running"
+    fi
+
+    echo "Checking for existing certbot renewal cron job..."
+
+    # Get current crontab (redirect stderr to handle case where no crontab exists)
+    temp_crontab=$(crontab -l 2>/dev/null)
+    local crontab_exists=$?
+
+    # Check if the certbot renewal line already exists
+    if [[ $crontab_exists -eq 0 ]] && echo "$temp_crontab" | grep -Fq "/usr/bin/certbot renew --quiet"; then
+        echo "✓ Certbot renewal cron job already exists"
+        echo "Current crontab entries containing 'certbot':"
+        echo "$temp_crontab" | grep certbot
+        return 0
+    fi
+
+    echo "Adding certbot renewal cron job..."
+
+    # Create new crontab content
+    if [[ $crontab_exists -eq 0 && -n "$temp_crontab" ]]; then
+        # Existing crontab - append to it
+        {
+            echo "$temp_crontab"
+            echo "$cron_line"
+        } | crontab -
+    else
+        # No existing crontab - create new one
+        echo "$cron_line" | crontab -
+    fi
+
+    if [[ $? -eq 0 ]]; then
+        echo "✓ Certbot renewal cron job added successfully!"
+        echo "Added: $cron_line"
+        echo ""
+        echo "This will automatically renew SSL certificates daily at 12:00 PM."
+        echo "You can view your current crontab with: crontab -l"
+    else
+        echo "✗ Failed to add certbot renewal cron job"
+        return 1
+    fi
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Launch Claude CLI with dangerous mode bypassing permission checks.
+#
+# Usage example:
+#   claude-danger
+claude-danger() {
+    # Check if claude command is available
+    if command -v claude >/dev/null 2>&1; then
+        echo "Launching Claude CLI in dangerous mode (skipping permission checks)..."
+        claude --dangerously-skip-permissions "$@"
+    else
+        echo "Claude is not currently installed."
+        echo "Please install Claude CLI to use this function."
+        return 1
+    fi
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

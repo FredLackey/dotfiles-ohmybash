@@ -30,22 +30,10 @@ shopt -s nocaseglob
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Load OS-specific options
-# This sources the OS-specific bash_options file if it exists
-
-# Determine OS and source appropriate file
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    # macOS
-    [ -f "$HOME/.bash_options.macos" ] && source "$HOME/.bash_options.macos"
-elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    # Linux - check distribution
-    if [ -f /etc/lsb-release ] || [ -f /etc/debian_version ]; then
-        # Ubuntu/Debian-based
-        [ -f "$HOME/.bash_options.ubuntu" ] && source "$HOME/.bash_options.ubuntu"
-
-        # Check for Raspberry Pi
-        if [ -f /proc/device-tree/model ] && grep -q "Raspberry Pi" /proc/device-tree/model 2>/dev/null; then
-            [ -f "$HOME/.bash_options.pios" ] && source "$HOME/.bash_options.pios"
-        fi
-    fi
-fi
+# Note: OS-specific bash_options would be sourced here if they existed,
+# but currently all shell options are universal.
+# If OS-specific options are needed in the future, create:
+#   - src/files/macos/bash_options
+#   - src/files/ubuntu/bash_options
+#   - src/files/pios/bash_options
+# And have them source this common file first.

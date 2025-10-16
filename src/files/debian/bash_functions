@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Debian-based Bash Functions
+# Functions specific to Debian-based systems (Ubuntu, Raspberry Pi OS)
+
+# Source common functions first
+if [ -f "${HOME}/.config/bash/common/bash_functions" ]; then
+    source "${HOME}/.config/bash/common/bash_functions"
+fi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Debian-specific functions would go here
+# Currently, all Debian-specific functions are further specialized
+# in ubuntu/ and pios/ subdirectories
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

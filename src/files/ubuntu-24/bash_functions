@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Ubuntu 24.04 Bash Functions
+# Version-specific functions for Ubuntu 24.04 LTS
+
+# Source parent ubuntu functions first
+if [ -f "${HOME}/.config/bash/ubuntu/bash_functions" ]; then
+    source "${HOME}/.config/bash/ubuntu/bash_functions"
+fi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Ubuntu 24.04-specific functions would go here
+# Currently no version-specific overrides needed
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
