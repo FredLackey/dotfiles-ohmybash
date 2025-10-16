@@ -413,7 +413,8 @@ initialize_git_repository() {
 # ------------------------------------------------------------------------------
 
 # Create symbolic links from dotfiles repository to home directory
-# Uses hierarchical resolution: common → OS family → version → edition
+# Uses hierarchical resolution: Only creates symlinks to MOST SPECIFIC version
+# OS-specific files source their parent/generic versions internally
 create_symlinks() {
 
     local os_name="$(get_os_name)"
@@ -436,7 +437,7 @@ create_symlinks() {
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    # Build hierarchy path array based on OS
+    # Build hierarchy path array based on OS (ordered from general to specific)
     local -a hierarchy=("common")
 
     if [ "$os_name" == "macos" ]; then
@@ -462,7 +463,10 @@ create_symlinks() {
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    # Process each level in hierarchy
+    # Build a map of files: target_path => most_specific_source_path
+    # Later levels (more specific) override earlier levels
+    declare -A file_map
+
     for level in "${hierarchy[@]}"; do
         local level_dir="${files_base_dir}/${level}"
 
@@ -494,43 +498,54 @@ create_symlinks() {
                 continue
             fi
 
-            # Create target directory if needed
-            local targetDir="$(dirname "$targetFile")"
-            if [ ! -d "$targetDir" ]; then
-                mkdir -p "$targetDir"
-            fi
+            # Add/update the map with most specific version
+            file_map["$targetFile"]="$sourceFile"
 
-            # Create or update symlink
-            if [ ! -e "$targetFile" ] || $skipQuestions; then
+        done < <(find "$level_dir" -type f -print0)
 
-                execute \
-                    "ln -fs $sourceFile $targetFile" \
-                    "$targetFile → $sourceFile"
+    done
 
-            elif [ "$(readlink "$targetFile")" == "$sourceFile" ]; then
-                print_success "$targetFile → $sourceFile"
-            else
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-                if ! $skipQuestions; then
+    # Now create symlinks ONLY for the most specific version of each file
+    for targetFile in "${!file_map[@]}"; do
+        local sourceFile="${file_map[$targetFile]}"
 
-                    ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
-                    if answer_is_yes; then
+        # Create target directory if needed
+        local targetDir="$(dirname "$targetFile")"
+        if [ ! -d "$targetDir" ]; then
+            mkdir -p "$targetDir"
+        fi
 
-                        rm -rf "$targetFile"
+        # Create or update symlink
+        if [ ! -e "$targetFile" ] || $skipQuestions; then
 
-                        execute \
-                            "ln -fs $sourceFile $targetFile" \
-                            "$targetFile → $sourceFile"
+            execute \
+                "ln -fs $sourceFile $targetFile" \
+                "$targetFile → $sourceFile"
 
-                    else
-                        print_error "$targetFile → $sourceFile"
-                    fi
+        elif [ "$(readlink "$targetFile")" == "$sourceFile" ]; then
+            print_success "$targetFile → $sourceFile"
+        else
 
+            if ! $skipQuestions; then
+
+                ask_for_confirmation "'$targetFile' already exists, do you want to overwrite it?"
+                if answer_is_yes; then
+
+                    rm -rf "$targetFile"
+
+                    execute \
+                        "ln -fs $sourceFile $targetFile" \
+                        "$targetFile → $sourceFile"
+
+                else
+                    print_error "$targetFile → $sourceFile"
                 fi
 
             fi
 
-        done < <(find "$level_dir" -type f -print0)
+        fi
 
     done
 

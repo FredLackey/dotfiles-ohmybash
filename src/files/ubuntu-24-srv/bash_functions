@@ -4,8 +4,11 @@
 # Server edition-specific functions for Ubuntu 24.04 LTS
 
 # Source parent ubuntu-24 functions first
-if [ -f "${HOME}/.config/bash/ubuntu-24/bash_functions" ]; then
-    source "${HOME}/.config/bash/ubuntu-24/bash_functions"
+# Get the directory where this file actually lives (resolves symlinks)
+BASH_FUNCTIONS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [ -f "${BASH_FUNCTIONS_DIR}/../ubuntu-24/bash_functions" ]; then
+    source "${BASH_FUNCTIONS_DIR}/../ubuntu-24/bash_functions"
 fi
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

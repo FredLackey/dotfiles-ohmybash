@@ -102,40 +102,49 @@ Some functions may need different implementations per OS:
 
 ## Migration Strategy
 
-The setup process creates symlinks to the **most specific** bash_functions file for the target system. Each OS-specific file sources its parent in the hierarchy.
+### Critical Pattern: Symlinks + Internal Sourcing
 
-### File Hierarchy (each sources the parent level)
+**IMPORTANT:** The system uses a two-level approach:
 
+1. **Symlink Creation:** Creates **ONE symlink** per file in `$HOME/`, pointing to the **MOST SPECIFIC** version
+2. **Internal Sourcing:** The specific file internally sources its parent/generic versions
+
+This means:
+- `~/.bash_functions` → symlink to `src/files/macos/bash_functions` (most specific)
+- Inside `macos/bash_functions`, it sources `../common/bash_functions`
+
+**DO NOT create multiple symlinks** (one per hierarchy level) as this causes overwrites.
+
+### File Hierarchy (Specific → Generic Sourcing)
+
+Each OS-specific file sources its parent in the hierarchy, creating a chain from specific to generic:
+
+**Ubuntu 24 Server:**
 ```
-common/bash_functions                    # Base - 30 universal functions
-  ↑
-debian/bash_functions                    # Sources common/ + Debian-specific
-  ↑
-ubuntu/bash_functions                    # Sources debian/ + Ubuntu-specific (11 functions)
-  ↑
-ubuntu-24/bash_functions                 # Sources ubuntu/ + Ubuntu 24-specific
-  ↑
-ubuntu-24-srv/bash_functions             # Sources ubuntu-24/ + server-specific
+~/.bash_functions → (symlink to ubuntu-24-srv/bash_functions)
+                    ↓ (sources)
+ubuntu-24-srv/bash_functions → sources ubuntu-24/bash_functions
+ubuntu-24/bash_functions → sources ubuntu/bash_functions
+ubuntu/bash_functions → sources debian/bash_functions
+debian/bash_functions → sources common/bash_functions
+common/bash_functions → (base functions)
 ```
 
-Similarly for Raspberry Pi OS:
+**Raspberry Pi OS:**
 ```
-common/bash_functions                    # Base - 30 universal functions
-  ↑
-debian/bash_functions                    # Sources common/ + Debian-specific
-  ↑
-pios/bash_functions                      # Sources debian/ + Pi-specific (9 functions)
-  ↑
-pios-5-srv/bash_functions                # Sources pios/ + version/edition-specific
+~/.bash_functions → (symlink to pios/bash_functions)
+                    ↓ (sources)
+pios/bash_functions → sources debian/bash_functions
+debian/bash_functions → sources common/bash_functions
+common/bash_functions → (base functions)
 ```
 
-And for macOS:
+**macOS:**
 ```
-common/bash_functions                    # Base - 30 universal functions
-  ↑
-macos/bash_functions                     # Sources common/ + macOS-specific
-  ↑
-macos-15/bash_functions                  # Sources macos/ + version-specific
+~/.bash_functions → (symlink to macos/bash_functions)
+                    ↓ (sources)
+macos/bash_functions → sources common/bash_functions
+common/bash_functions → (base functions)
 ```
 
 ### Implementation Steps
@@ -149,28 +158,91 @@ macos-15/bash_functions                  # Sources macos/ + version-specific
 7. **Create `src/files/macos/bash_functions`** that sources common/
 8. **Create macOS version-specific files** (macos-15/, etc.) that source macos/
 
+### Correct Sourcing Pattern
+
+**CRITICAL:** OS-specific files must use the correct pattern to resolve symlinks and source parent files:
+
+```bash
+#!/bin/bash
+
+# Get the directory where this file actually lives (resolves symlinks)
+BASH_FUNCTIONS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source parent functions
+if [ -f "${BASH_FUNCTIONS_DIR}/../common/bash_functions" ]; then
+    source "${BASH_FUNCTIONS_DIR}/../common/bash_functions"
+fi
+
+# Add OS-specific functions below
+```
+
+**Why this pattern:**
+- `${BASH_SOURCE[0]}` gives the actual file path (not the symlink path)
+- `dirname` gets the directory containing the file
+- `cd` and `pwd` resolve to the absolute path
+- This allows relative paths (`../common/`) to work correctly
+
+**WRONG patterns to avoid:**
+- ❌ `source "${HOME}/.config/bash/common/bash_functions"` - hardcoded path doesn't exist
+- ❌ `readlink "${BASH_SOURCE[0]}"` - unreliable on different systems
+- ❌ `source "$DOTFILES_DIR/files/common/bash_functions"` - assumes DOTFILES_DIR is set
+
 ### Version-Specific Files
 
 Even though current Ubuntu versions have identical functions, **version-specific files must still exist** as entry points for the symlink system. They may be simple files that just source the parent:
 
 ```bash
 #!/bin/bash
-# Source parent Ubuntu functions
-source "${HOME}/.config/bash/ubuntu/bash_functions"
+
+# Ubuntu 24.04 Server Bash Functions
+# Server edition-specific functions for Ubuntu 24.04 LTS
+
+# Source parent ubuntu-24 functions first
+# Get the directory where this file actually lives (resolves symlinks)
+BASH_FUNCTIONS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [ -f "${BASH_FUNCTIONS_DIR}/../ubuntu-24/bash_functions" ]; then
+    source "${BASH_FUNCTIONS_DIR}/../ubuntu-24/bash_functions"
+fi
 
 # Add ubuntu-24-srv specific functions here (if any)
 ```
 
 This pattern allows for:
+- **Only ONE symlink** per file in the home directory
 - Future version-specific overrides
 - Clear hierarchy for inheritance
 - Consistent symlink target naming
 - Easy addition of edition-specific functions (srv vs wks vs wsl)
 
+## Symlink Creation Logic
+
+The `create_symlinks()` function in `src/utils/common/utils.sh` implements the correct pattern:
+
+1. **Build a map** of all files across all hierarchy levels
+2. **Later (more specific) levels override** earlier entries in the map
+3. **Create ONE symlink** per target file, pointing to the most specific source
+4. **Never create multiple symlinks** for the same target file
+
+**Example for macOS:**
+- Hierarchy: `common` → `macos`
+- Map building finds:
+  - `common/bash_functions` → adds to map: `~/.bash_functions` → `common/bash_functions`
+  - `macos/bash_functions` → **overwrites** map: `~/.bash_functions` → `macos/bash_functions`
+- Result: ONE symlink `~/.bash_functions` → `macos/bash_functions`
+- The `macos/bash_functions` file internally sources `common/bash_functions`
+
+**Example for Ubuntu 24 Server:**
+- Hierarchy: `common` → `ubuntu` → `ubuntu-24` → `ubuntu-24-srv`
+- Each level may have `bash_functions`, but only the most specific version is symlinked
+- Result: `~/.bash_functions` → `ubuntu-24-srv/bash_functions`
+- The `ubuntu-24-srv/bash_functions` file sources `ubuntu-24/bash_functions`, which sources `ubuntu/bash_functions`, etc.
+
 ## Implementation Notes
 
 - Functions should be copied as-is from legacy without refactoring (per CLAUDE.md guidelines)
-- Each OS-specific file should source the parent level file first
-- Use proper main() function pattern if needed for sourcing logic
+- Each OS-specific file **must** source the parent level file first using the correct pattern
+- Use the `BASH_FUNCTIONS_DIR` pattern shown above to resolve symlinks correctly
 - Functions with OS-specific commands should be placed at the appropriate OS level
 - Functions that work identically everywhere should be in common/
+- **Never create multiple symlinks** for the same bash file - only ONE symlink to the most specific version

@@ -9,8 +9,12 @@
 # Load Ubuntu aliases first (which loads common aliases)
 # Raspberry Pi OS is Debian-based, so we inherit Ubuntu aliases
 
-DOTFILES_DIR="$(cd "$(dirname "$(readlink "${BASH_SOURCE[0]}")")/.." && pwd)"
-[ -f "$DOTFILES_DIR/files/ubuntu/bash_aliases" ] && source "$DOTFILES_DIR/files/ubuntu/bash_aliases"
+# Get the directory where this file actually lives (resolves symlinks)
+BASH_ALIASES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [ -f "${BASH_ALIASES_DIR}/../ubuntu/bash_aliases" ]; then
+    source "${BASH_ALIASES_DIR}/../ubuntu/bash_aliases"
+fi
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

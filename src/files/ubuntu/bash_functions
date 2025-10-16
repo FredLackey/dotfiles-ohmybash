@@ -4,8 +4,11 @@
 # Functions specific to Ubuntu/Debian-based Linux systems
 
 # Source parent debian functions first
-if [ -f "${HOME}/.config/bash/debian/bash_functions" ]; then
-    source "${HOME}/.config/bash/debian/bash_functions"
+# Get the directory where this file actually lives (resolves symlinks)
+BASH_FUNCTIONS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [ -f "${BASH_FUNCTIONS_DIR}/../debian/bash_functions" ]; then
+    source "${BASH_FUNCTIONS_DIR}/../debian/bash_functions"
 fi
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
